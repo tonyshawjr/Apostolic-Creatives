@@ -2,25 +2,26 @@
   <div class="flex min-h-screen bg-gray-50">
     <!-- Sidebar -->
     <aside :class="[
-      'fixed z-40 w-64 bg-white shadow-md transition-transform duration-300 md:static md:translate-x-0',
+      'fixed z-40 w-100 transition-transform duration-300 md:static md:translate-x-0',
       isSidebarOpen ? 'translate-x-0' : '-translate-x-full',
     ]">
       <div class="p-6">
-        <h1 class="text-2xl font-bold text-purple-800">Apostolic Creatives</h1>
-        <p class="text-sm text-gray-600 mt-2">Welcome, {{ userName }}</p>
-        <p class="text-sm text-gray-500">{{ userEmail }}</p>
+        <h1 class="text-2xl font-bold text-gray-800">Apostolic Creatives</h1>
       </div>
 
-      <nav class="mt-8">
+      <nav class="mt-8 p-4">
         <ul class="space-y-2">
           <!-- Main Menu Items -->
-          <li v-for="item in menuItems" :key="item.name"
-            class="px-4 py-3 hover:bg-purple-100 rounded-lg cursor-pointer">
-            <div class="flex justify-between items-center" @click="setActiveMenu(item)">
-              <span class="text-gray-700 font-medium"
-                :class="{ 'font-bold bg-purple-100 px-2 py-1 rounded-lg': item.name === activeMenuItem }">
+          <li v-for="item in menuItems" :key="item.name" class="px-4 py-3 cursor-pointer">
+            <div class="flex justify-between items-center" @click="toggleChildMenu(item)">
+              <!-- Menu Item Label -->
+              <span class="text-gray-700 transition-all duration-300" :class="{
+                'font-bold': activeMenuItem === item.name,
+                'hover:font-bold': true,
+              }">
                 {{ item.label }}
               </span>
+
               <!-- Dropdown Arrow -->
               <span v-if="item.children">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 transform transition-transform"
@@ -33,22 +34,26 @@
 
             <!-- Child Menu Items -->
             <ul v-if="item.children && expandedMenu === item.name" class="ml-6 mt-2 space-y-1">
-              <li v-for="child in item.children" :key="child.name"
-                class="px-4 py-2 hover:bg-purple-50 rounded-lg cursor-pointer"
-                :class="{ 'bg-purple-200 font-medium': child.name === activeMenuItem }" @click="setActiveMenu(child)">
-                <span class="text-gray-600 text-sm">{{ child.label }}</span>
+              <li v-for="child in item.children" :key="child.name" class="px-4 py-2 cursor-pointer"
+                @click="setActiveMenu(child)">
+                <span class="text-gray-600 text-sm transition-all duration-300" :class="{
+                  'font-bold': activeMenuItem === child.name,
+                  'hover:font-bold': true,
+                }">
+                  {{ child.label }}
+                </span>
               </li>
             </ul>
           </li>
         </ul>
       </nav>
+
     </aside>
 
     <!-- Main Content -->
     <div class="flex-1 flex flex-col">
       <!-- Header -->
-      <header
-        class="flex flex-wrap md:flex-nowrap justify-between items-center px-6 py-4 bg-white shadow-sm space-y-4 md:space-y-0">
+      <header class="flex flex-wrap md:flex-nowrap justify-between items-center px-6 py-4 space-y-4 md:space-y-0">
         <!-- Mobile Header -->
         <div class="flex justify-between items-center w-full md:hidden">
           <!-- Hamburger Menu -->
@@ -110,7 +115,7 @@
               <line x1="21" y1="21" x2="16.65" y2="16.65" stroke-linecap="round" stroke-linejoin="round" />
             </svg>
 
-            <input type="text" placeholder="Search Anything"
+            <input type="text" placeholder="Search Talent, Partners, or Team Members"
               class="w-full px-12 py-3 rounded-full bg-gray-100 text-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-300" />
           </div>
         </div>
@@ -190,14 +195,19 @@ export default {
   data() {
     return {
       userName: "Tony Shaw",
-      userEmail: "tony.shaw@apostolicsoncall.com",
+      userEmail: "tony.shaw@apostoliccreatives.com",
       dropdownOpen: false,
       activeMenuItem: "Overview",
       expandedMenu: null,
       isSidebarOpen: false,
       menuItems: [
         { name: "Overview", label: "Dashboard" },
-        { name: "Profile", label: "Profile", children: [] },
+        {
+          name: "Profile", label: "Profile", children: [
+            { name: "ViewProfile", label: "View Profile" },
+            { name: "EditProfile", label: "Edit Profile" },
+          ]
+        },
         { name: "ManageUsers", label: "Manage Users" },
         { name: "Settings", label: "Settings" },
       ],
@@ -215,6 +225,12 @@ export default {
         Settings: defineAsyncComponent(() =>
           import("./admin/SettingsPage.vue")
         ),
+        ViewProfile: defineAsyncComponent(() =>
+          import("./admin/ProfilePage.vue")
+        ),
+        EditProfile: defineAsyncComponent(() =>
+          import("./admin/EditProfilePage.vue")
+        ),
       };
       return components[this.activeMenuItem] || components.Overview;
     },
@@ -222,12 +238,31 @@ export default {
   methods: {
     setActiveMenu(item) {
       this.activeMenuItem = item.name;
-      this.isSidebarOpen = false;
+      this.expandedMenu = item.children ? this.expandedMenu : null; // Closes expanded menu for child items
+      this.isSidebarOpen = false; // Closes the sidebar on mobile
+      const routeMap = {
+        Overview: "/dashboard",
+        ManageUsers: "/dashboard/manage-users",
+        Settings: "/dashboard/settings",
+        ViewProfile: "/dashboard/profile",
+        EditProfile: "/dashboard/profile/edit",
+      };
+      const route = routeMap[item.name] || `/dashboard/${item.name.toLowerCase()}`;
+      this.$router.push(route); // Navigate to the route
+    },
+    toggleChildMenu(item) {
+      // Toggles child menu visibility for items with children
+      if (item.children) {
+        this.expandedMenu = this.expandedMenu === item.name ? null : item.name;
+      } else {
+        this.setActiveMenu(item); // Navigate directly if no children
+      }
     },
     toggleDropdown() {
       this.dropdownOpen = !this.dropdownOpen;
     },
   },
+
 };
 </script>
 
