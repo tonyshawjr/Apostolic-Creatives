@@ -88,10 +88,11 @@
                   <td class="px-4 py-2">{{ job.church }}</td>
                   <td class="px-4 py-2">{{ job.location }}</td>
                   <td class="px-4 py-2 space-x-2">
-                    <a href="#" class="text-blue-600 hover:underline">View</a>
-                    <a href="#" class="text-green-600 hover:underline">Approve</a>
-                    <a href="#" class="text-red-600 hover:underline">Disapprove</a>
+                    <button class="button text-blue-600 hover:text-blue-800">View</button>
+                    <button class="button text-green-600 hover:text-green-800">Approve</button>
+                    <button class="button text-red-600 hover:text-red-800">Disapprove</button>
                   </td>
+
                 </tr>
               </tbody>
             </table>
@@ -113,8 +114,9 @@
                 <tr v-for="user in missedPayments" :key="user.id" class="border-t even:bg-gray-50">
                   <td class="px-4 py-2">{{ user.name }}</td>
                   <td class="px-4 py-2">
-                    <a href="#" class="text-blue-600 hover:underline">Contact</a>
+                    <button class="button text-blue-600 hover:text-blue-800">Contact</button>
                   </td>
+
                 </tr>
               </tbody>
             </table>
