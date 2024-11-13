@@ -1,217 +1,269 @@
 <template>
-    <div class="space-y-6">
-      <h1 class="text-2xl font-bold text-gray-800">Admin Dashboard Overview</h1>
-  
-      <!-- Loading/Error States -->
-      <div v-if="loading" class="text-center text-gray-500">Loading...</div>
-      <div v-else-if="error" class="text-center text-red-600">Failed to load data. Please try again later.</div>
-      <div v-else>
-        <!-- Summary Metrics -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-          <!-- Total Active Creatives -->
-          <div class="bg-white shadow-sm rounded-lg p-6 text-center hover:shadow-lg transition-shadow duration-300">
-            <h2 class="text-lg font-medium text-gray-600">Active Creatives</h2>
-            <p class="text-3xl font-bold text-green-600">{{ metrics.activeCreatives }}</p>
-            <a href="/admin/active-creatives" class="text-sm text-blue-500 underline hover:text-blue-700">View Active Creatives</a>
-          </div>
-  
-          <!-- Total Inactive Creatives -->
-          <div class="bg-white shadow-sm rounded-lg p-6 text-center hover:shadow-lg transition-shadow duration-300">
-            <h2 class="text-lg font-medium text-gray-600">Inactive Creatives</h2>
-            <p class="text-3xl font-bold text-yellow-600">{{ metrics.inactiveCreatives }}</p>
-            <a href="/admin/inactive-creatives" class="text-sm text-blue-500 underline hover:text-blue-700">View Inactive Creatives</a>
-          </div>
-  
-          <!-- Open Job Listings -->
-          <div class="bg-white shadow-sm rounded-lg p-6 text-center hover:shadow-lg transition-shadow duration-300">
-            <h2 class="text-lg font-medium text-gray-600">Open Job Listings</h2>
-            <p class="text-3xl font-bold text-blue-600">{{ metrics.openJobs }}</p>
-            <a href="/admin/job-listings" class="text-sm text-blue-500 underline hover:text-blue-700">View Job Listings</a>
-          </div>
-  
-          <!-- Pending Verifications -->
-          <div class="bg-white shadow-sm rounded-lg p-6 text-center hover:shadow-lg transition-shadow duration-300">
-            <h2 class="text-lg font-medium text-gray-600">Pending Verifications</h2>
-            <p class="text-3xl font-bold text-red-600">{{ metrics.pendingVerifications }}</p>
-            <a href="/admin/verifications" class="text-sm text-blue-500 underline hover:text-blue-700">View Verifications</a>
+  <div class="space-y-6">
+    <h1 class="text-2xl font-bold text-gray-800">Admin Dashboard Overview</h1>
+
+    <!-- Loading/Error States -->
+    <div v-if="loading" class="text-center text-gray-500">Loading...</div>
+    <div v-else-if="error" class="text-center text-red-600">Failed to load data. Please try again later.</div>
+    <div v-else>
+      <!-- Summary Metrics -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+        <!-- Total Active Creatives -->
+        <div class="bg-white shadow-xl rounded-lg p-6 text-center hover:shadow-lg transition-shadow duration-300">
+          <h2 class="text-lg font-medium text-gray-600">Active Creatives</h2>
+          <p class="text-3xl font-bold text-green-600">{{ metrics.activeCreatives }}</p>
+          <a href="/admin/active-creatives" class="text-sm text-blue-500 underline hover:text-blue-700">View Active
+            Creatives</a>
+        </div>
+
+        <!-- Total Inactive Creatives -->
+        <div class="bg-white shadow-xl rounded-lg p-6 text-center hover:shadow-lg transition-shadow duration-300">
+          <h2 class="text-lg font-medium text-gray-600">Inactive Creatives</h2>
+          <p class="text-3xl font-bold text-yellow-600">{{ metrics.inactiveCreatives }}</p>
+          <a href="/admin/inactive-creatives" class="text-sm text-blue-500 underline hover:text-blue-700">View Inactive
+            Creatives</a>
+        </div>
+
+        <!-- Open Job Listings -->
+        <div class="bg-white shadow-xl rounded-lg p-6 text-center hover:shadow-lg transition-shadow duration-300">
+          <h2 class="text-lg font-medium text-gray-600">Open Job Listings</h2>
+          <p class="text-3xl font-bold text-blue-600">{{ metrics.openJobs }}</p>
+          <a href="/admin/job-listings" class="text-sm text-blue-500 underline hover:text-blue-700">View Job
+            Listings</a>
+        </div>
+
+        <!-- Pending Verifications -->
+        <div class="bg-white shadow-xl rounded-lg p-6 text-center hover:shadow-lg transition-shadow duration-300">
+          <h2 class="text-lg font-medium text-gray-600">Pending Verifications</h2>
+          <p class="text-3xl font-bold text-red-600">{{ metrics.pendingVerifications }}</p>
+          <a href="/admin/verifications" class="text-sm text-blue-500 underline hover:text-blue-700">View
+            Verifications</a>
+        </div>
+      </div>
+
+      <!-- Platform Activity and Income Metrics -->
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mt-6">
+        <!-- Platform Activity Chart (3/4 width) -->
+        <div class="bg-white shadow-xl rounded-lg p-6 md:col-span-3">
+          <h2 class="text-lg font-medium text-gray-600">Platform Activity</h2>
+          <div class="h-64 sm:h-80 md:h-96 lg:h-64">
+            <canvas id="platformActivityChart"></canvas>
           </div>
         </div>
-  
-        <!-- Platform Activity and Income Metrics -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mt-6">
-          <!-- Platform Activity Chart (3/4 width) -->
-          <div class="bg-white shadow-sm rounded-lg p-6 md:col-span-3">
-            <h2 class="text-lg font-medium text-gray-600">Platform Activity</h2>
-            <div class="h-64 sm:h-80 md:h-96 lg:h-64">
-              <canvas id="platformActivityChart"></canvas>
-            </div>
+
+        <!-- Income Metrics (1/4 width) -->
+        <div class="flex flex-col space-y-4">
+          <!-- MTD Income -->
+          <div class="bg-white shadow-xl rounded-lg p-6 text-center hover:shadow-lg transition-shadow duration-300">
+            <h2 class="text-lg font-medium text-gray-600">MTD Income</h2>
+            <p class="text-3xl font-bold text-purple-600">${{ metrics.mtdIncome }}</p>
           </div>
-  
-          <!-- Income Metrics (1/4 width) -->
-          <div class="flex flex-col space-y-4">
-            <!-- MTD Income -->
-            <div class="bg-white shadow-sm rounded-lg p-6 text-center hover:shadow-lg transition-shadow duration-300">
-              <h2 class="text-lg font-medium text-gray-600">MTD Income</h2>
-              <p class="text-3xl font-bold text-purple-600">${{ metrics.mtdIncome }}</p>
-            </div>
-  
-            <!-- YTD Income -->
-            <div class="bg-white shadow-sm rounded-lg p-6 text-center hover:shadow-lg transition-shadow duration-300">
-              <h2 class="text-lg font-medium text-gray-600">YTD Income</h2>
-              <p class="text-3xl font-bold text-purple-600">${{ metrics.ytdIncome }}</p>
-            </div>
+
+          <!-- YTD Income -->
+          <div class="bg-white shadow-xl rounded-lg p-6 text-center hover:shadow-lg transition-shadow duration-300">
+            <h2 class="text-lg font-medium text-gray-600">YTD Income</h2>
+            <p class="text-3xl font-bold text-purple-600">${{ metrics.ytdIncome }}</p>
           </div>
         </div>
-  
-        <!-- Tables Section -->
-        <div class="grid grid-cols-1 gap-6 mt-6">
-          <!-- Jobs Pending Approval Table -->
-          <div class="bg-white shadow-sm rounded-lg p-6">
-            <h2 class="text-lg font-medium text-gray-600 mb-4">Jobs Pending Approval</h2>
-            <div class="overflow-x-auto">
-              <table class="w-full table-auto border-collapse">
-                <thead>
-                  <tr class="bg-gray-100 border-b">
-                    <th class="px-4 py-2 text-left text-sm text-gray-600" scope="col">Role/Job Title</th>
-                    <th class="px-4 py-2 text-left text-sm text-gray-600" scope="col">Church</th>
-                    <th class="px-4 py-2 text-left text-sm text-gray-600" scope="col">Location</th>
-                    <th class="px-4 py-2 text-left text-sm text-gray-600" scope="col">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr v-for="job in pendingJobs" :key="job.id" class="border-t even:bg-gray-50">
-                    <td class="px-4 py-2">{{ job.title }}</td>
-                    <td class="px-4 py-2">{{ job.church }}</td>
-                    <td class="px-4 py-2">{{ job.location }}</td>
-                    <td class="px-4 py-2 space-x-2">
-                      <a href="#" class="text-blue-600 hover:underline">View</a>
-                      <a href="#" class="text-green-600 hover:underline">Approve</a>
-                      <a href="#" class="text-red-600 hover:underline">Disapprove</a>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
+      </div>
+
+      <!-- Tables Section -->
+      <div class="grid grid-cols-1 gap-6 mt-6">
+        <!-- Jobs Pending Approval Table -->
+        <div class="bg-white shadow-xl rounded-lg p-6">
+          <h2 class="text-lg font-medium text-gray-600 mb-4">Jobs Pending Approval</h2>
+          <div class="overflow-x-auto">
+            <table class="w-full table-auto border-collapse">
+              <thead>
+                <tr class="bg-gray-100 border-b">
+                  <th class="px-4 py-2 text-left text-sm text-gray-600" scope="col">Role/Job Title</th>
+                  <th class="px-4 py-2 text-left text-sm text-gray-600" scope="col">Church</th>
+                  <th class="px-4 py-2 text-left text-sm text-gray-600" scope="col">Location</th>
+                  <th class="px-4 py-2 text-left text-sm text-gray-600" scope="col">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="job in pendingJobs" :key="job.id" class="border-t even:bg-gray-50">
+                  <td class="px-4 py-2">{{ job.title }}</td>
+                  <td class="px-4 py-2">{{ job.church }}</td>
+                  <td class="px-4 py-2">{{ job.location }}</td>
+                  <td class="px-4 py-2 space-x-2">
+                    <a href="#" class="text-blue-600 hover:underline">View</a>
+                    <a href="#" class="text-green-600 hover:underline">Approve</a>
+                    <a href="#" class="text-red-600 hover:underline">Disapprove</a>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
-  
-          <!-- Missed Payments Table -->
-          <div class="bg-white shadow-sm rounded-lg p-6">
-            <h2 class="text-lg font-medium text-gray-600 mb-4">Missed Payments</h2>
-            <div class="overflow-x-auto">
-              <table class="w-full table-auto border-collapse">
-                <thead>
-                  <tr class="bg-gray-100 border-b">
-                    <th class="px-4 py-2 text-left text-sm text-gray-600" scope="col">User</th>
-                    <th class="px-4 py-2 text-left text-sm text-gray-600" scope="col">Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr v-for="user in missedPayments" :key="user.id" class="border-t even:bg-gray-50">
-                    <td class="px-4 py-2">{{ user.name }}</td>
-                    <td class="px-4 py-2">
-                      <a href="#" class="text-blue-600 hover:underline">Contact</a>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
+        </div>
+
+        <!-- Missed Payments Table -->
+        <div class="bg-white shadow-xl rounded-lg p-6">
+          <h2 class="text-lg font-medium text-gray-600 mb-4">Missed Payments</h2>
+          <div class="overflow-x-auto">
+            <table class="w-full table-auto border-collapse">
+              <thead>
+                <tr class="bg-gray-100 border-b">
+                  <th class="px-4 py-2 text-left text-sm text-gray-600" scope="col">User</th>
+                  <th class="px-4 py-2 text-left text-sm text-gray-600" scope="col">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="user in missedPayments" :key="user.id" class="border-t even:bg-gray-50">
+                  <td class="px-4 py-2">{{ user.name }}</td>
+                  <td class="px-4 py-2">
+                    <a href="#" class="text-blue-600 hover:underline">Contact</a>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
     </div>
-  </template>
-  
-  <script>
-  import { Chart, LineController, LineElement, PointElement, LinearScale, CategoryScale, Tooltip, Legend, Title } from "chart.js";
-  
-  // Register necessary components
-  Chart.register(LineController, LineElement, PointElement, LinearScale, CategoryScale, Tooltip, Legend, Title);
-  
-  export default {
-    name: "OverviewPage",
-    data() {
-      return {
-        loading: true,
-        error: false,
-        metrics: {
-          activeCreatives: 0,
-          inactiveCreatives: 0,
-          openJobs: 0,
-          pendingVerifications: 0,
-          ytdIncome: 0,
-          mtdIncome: 0,
-        },
-        pendingJobs: [],
-        missedPayments: [],
-      };
-    },
-    methods: {
-      fetchData() {
-        setTimeout(() => {
-          this.metrics = {
-            activeCreatives: 120,
-            inactiveCreatives: 30,
-            openJobs: 12,
-            pendingVerifications: 5,
-            ytdIncome: 50000,
-            mtdIncome: 5000,
-          };
-          this.pendingJobs = [
-            { id: 1, title: "Choir Director", church: "First Apostolic Church", location: "Houston, TX" },
-            { id: 2, title: "Drummer", church: "Pentecostal Tabernacle", location: "New York, NY" },
-          ];
-          this.missedPayments = [
-            { id: 1, name: "John Doe" },
-            { id: 2, name: "Jane Smith" },
-          ];
-          this.loading = false;
-          this.$nextTick(() => this.renderChart());
-        }, 1000);
+  </div>
+</template>
+
+<script>
+import { Chart, LineController, LineElement, PointElement, LinearScale, CategoryScale, Tooltip, Legend, Title } from "chart.js";
+
+// Register necessary components
+Chart.register(LineController, LineElement, PointElement, LinearScale, CategoryScale, Tooltip, Legend, Title);
+
+export default {
+  name: "OverviewPage",
+  data() {
+    return {
+      loading: true,
+      error: false,
+      metrics: {
+        activeCreatives: 0,
+        inactiveCreatives: 0,
+        openJobs: 0,
+        pendingVerifications: 0,
+        ytdIncome: 0,
+        mtdIncome: 0,
       },
-      renderChart() {
-        const chartCanvas = document.getElementById("platformActivityChart");
-        if (!chartCanvas) return;
-        const ctx = chartCanvas.getContext("2d");
-        new Chart(ctx, {
-          type: "line",
-          data: {
-            labels: ["January", "February", "March", "April", "May"],
-            datasets: [
-              {
-                label: "Inactive Creatives",
-                data: [10, 20, 15, 25, 30],
-                borderColor: "#7C3AED",
-                backgroundColor: "rgba(124, 58, 237, 0.2)",
-              },
-              {
-                label: "Open Roles",
-                data: [5, 15, 10, 20, 25],
-                borderColor: "#F59E0B",
-                backgroundColor: "rgba(245, 158, 11, 0.2)",
-              },
-            ],
-          },
-          options: { responsive: true, maintainAspectRatio: false },
-        });
-      },
-    },
-    mounted() {
-      try {
-        this.fetchData();
-      } catch {
-        this.error = true;
+      pendingJobs: [],
+      missedPayments: [],
+    };
+  },
+  methods: {
+    fetchData() {
+      setTimeout(() => {
+        this.metrics = {
+          activeCreatives: 120,
+          inactiveCreatives: 30,
+          openJobs: 12,
+          pendingVerifications: 5,
+          ytdIncome: 50000,
+          mtdIncome: 5000,
+        };
+        this.pendingJobs = [
+          { id: 1, title: "Choir Director", church: "First Apostolic Church", location: "Houston, TX" },
+          { id: 2, title: "Drummer", church: "Pentecostal Tabernacle", location: "New York, NY" },
+        ];
+        this.missedPayments = [
+          { id: 1, name: "John Doe" },
+          { id: 2, name: "Jane Smith" },
+        ];
         this.loading = false;
-      }
+        this.$nextTick(() => this.renderChart());
+      }, 1000);
     },
-  };
-  </script>
-  
-  <style scoped>
-  .h-64 {
-    height: 16rem; /* Fixed height for the chart */
-  }
-  .overflow-x-auto {
-    overflow-x: auto; /* Make tables scrollable horizontally on small screens */
-  }
-  </style>
-  
+    renderChart() {
+      const chartCanvas = document.getElementById("platformActivityChart");
+      if (!chartCanvas) return;
+      const ctx = chartCanvas.getContext("2d");
+      new Chart(ctx, {
+        type: "line",
+        data: {
+          labels: ["January", "February", "March", "April", "May"],
+          datasets: [
+            {
+              label: "Inactive Creatives",
+              data: [10, 20, 15, 25, 30],
+              borderColor: "#7C3AED",
+              backgroundColor: "rgba(124, 58, 237, 0.2)",
+            },
+            {
+              label: "Open Roles",
+              data: [5, 15, 10, 20, 25],
+              borderColor: "#F59E0B",
+              backgroundColor: "rgba(245, 158, 11, 0.2)",
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            title: {
+              display: true,
+              text: "Recent Platform Activity",
+              font: { size: 18 },
+              color: "#4B5563",
+              padding: 20,
+            },
+            legend: {
+              labels: {
+                color: "#4B5563",
+              },
+            },
+          },
+          scales: {
+            x: {
+              grid: {
+                color: "#E5E7EB", // Light gridlines for the x-axis
+              },
+              ticks: {
+                color: "#4B5563",
+              },
+            },
+            y: {
+              grid: {
+                color: "#E5E7EB", // Light gridlines for the y-axis
+              },
+              ticks: {
+                color: "#4B5563",
+              },
+            },
+          },
+        },
+      });
+    }
+
+  },
+  mounted() {
+    try {
+      this.fetchData();
+    } catch {
+      this.error = true;
+      this.loading = false;
+    }
+  },
+};
+</script>
+
+<style scoped>
+.h-64 {
+  height: 16rem;
+  /* Fixed height for the chart */
+}
+
+.overflow-x-auto {
+  overflow-x: auto;
+  /* Make tables scrollable horizontally on small screens */
+}
+
+.button {
+  padding: 6px 12px;
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+}
+
+.button:hover {
+  background-color: #f1f1f1;
+}
+</style>
