@@ -85,7 +85,6 @@
 
 <script>
 import { defineAsyncComponent } from "vue";
-import ProfilePage from "./admin/ProfilePage.vue";
 
 export default {
   name: "DashboardPage",
@@ -93,9 +92,10 @@ export default {
     return {
       userName: "Tony Shaw",
       userEmail: "tony.shaw@apostolicsoncall.com",
-      activeMenuItem: "Profile", // Default menu item
+      activeMenuItem: "Overview", // Default to Overview
       isSidebarOpen: false, // Mobile sidebar visibility
       menuItems: [
+        { name: "Overview", label: "Dashboard" },
         { name: "Profile", label: "Profile" },
         { name: "ManageUsers", label: "Manage Users" },
         { name: "Settings", label: "Settings" },
@@ -106,7 +106,12 @@ export default {
     activeMenuItemComponent() {
       // Dynamically resolve components
       const components = {
-        Profile: ProfilePage,
+        Overview: defineAsyncComponent(() =>
+          import("./admin/OverviewPage.vue")
+        ),
+        Profile: defineAsyncComponent(() =>
+          import("./admin/ProfilePage.vue")
+        ),
         ManageUsers: defineAsyncComponent(() =>
           import("./admin/ManageUsersPage.vue")
         ),
@@ -114,12 +119,12 @@ export default {
           import("./admin/SettingsPage.vue")
         ),
       };
-      return components[this.activeMenuItem];
+      return components[this.activeMenuItem] || components.Overview; // Fallback to Overview
     },
   },
   methods: {
     setActiveMenu(item) {
-      this.activeMenuItem = item.name;
+      this.activeMenuItem = item.name; // Update active menu item
       this.isSidebarOpen = false; // Close sidebar on selection (mobile)
     },
   },
@@ -127,7 +132,7 @@ export default {
 </script>
 
 <style scoped>
-/* Custom styles for smooth sidebar transition */
+/* Sidebar and layout styling */
 aside {
   height: 100vh;
 }
