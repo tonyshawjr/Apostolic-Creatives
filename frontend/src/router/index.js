@@ -5,7 +5,9 @@ import DashboardPage from "../components/DashboardPage.vue";
 
 // Lazy-loaded components for optimization
 const ProfilePage = () => import('../components/admin/ProfilePage.vue');
+const EditProfilePage = () => import('../components/admin/EditProfilePage.vue');
 const SettingsPage = () => import('../components/admin/SettingsPage.vue');
+const ManageUsersPage = () => import('../components/admin/ManageUsersPage.vue');
 
 const routes = [
   {
@@ -15,18 +17,34 @@ const routes = [
   },
   {
     path: '/dashboard',
-    name: 'Dashboard',
-    component: DashboardPage,
-  },
-  {
-    path: '/profile',
-    name: 'Profile',
-    component: ProfilePage, // Lazy-loaded
-  },
-  {
-    path: '/settings',
-    name: 'Settings',
-    component: SettingsPage, // Lazy-loaded
+    component: DashboardPage, // Main layout for all dashboard pages
+    children: [
+      {
+        path: '', // Default route for dashboard
+        name: 'Overview',
+        component: () => import('../components/admin/OverviewPage.vue'),
+      },
+      {
+        path: 'profile',
+        name: 'Profile',
+        component: ProfilePage,
+      },
+      {
+        path: 'profile/edit',
+        name: 'EditProfile',
+        component: EditProfilePage,
+      },
+      {
+        path: 'manage-users',
+        name: 'ManageUsers',
+        component: ManageUsersPage,
+      },
+      {
+        path: 'settings',
+        name: 'Settings',
+        component: SettingsPage,
+      },
+    ],
   },
   {
     path: '/protected',
