@@ -15,14 +15,55 @@
 
       <nav class="mt-6">
         <ul>
+          <!-- Main Menu Items -->
           <li
             v-for="item in menuItems"
             :key="item.name"
             class="px-4 py-2 hover:bg-purple-100 cursor-pointer"
-            :class="{ 'bg-purple-200': item.name === activeMenuItem }"
-            @click="setActiveMenu(item)"
           >
-            <span class="text-gray-700 font-medium">{{ item.label }}</span>
+            <div
+              class="flex justify-between items-center"
+              @click="setActiveMenu(item)"
+            >
+              <span
+                class="text-gray-700 font-medium"
+                :class="{ 'font-bold': item.name === activeMenuItem }"
+              >
+                {{ item.label }}
+              </span>
+              <!-- Show dropdown arrow if the item has children -->
+              <span v-if="item.children">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-5 w-5 transform transition-transform"
+                  :class="{ 'rotate-90': expandedMenu === item.name }"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M6 8a1 1 0 011.707-.707l4 4a1 1 0 010 1.414l-4 4A1 1 0 016 16V8z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+              </span>
+            </div>
+
+            <!-- Child Menu Items -->
+            <ul
+              v-if="item.children && expandedMenu === item.name"
+              class="ml-6 mt-2 space-y-1"
+            >
+              <li
+                v-for="child in item.children"
+                :key="child.name"
+                class="px-4 py-2 hover:bg-purple-50 cursor-pointer"
+                :class="{ 'bg-purple-200': child.name === activeMenuItem }"
+                @click="setActiveMenu(child)"
+              >
+                <span class="text-gray-600 text-sm">{{ child.label }}</span>
+              </li>
+            </ul>
           </li>
         </ul>
       </nav>
@@ -70,7 +111,11 @@
 
       <!-- Dynamic Content -->
       <main class="flex-1 p-6">
-        <component :is="activeMenuItemComponent" />
+        <!-- Dynamically load the active menu component -->
+        <component
+          :is="activeMenuItemComponent"
+          @set-active-menu="setActiveMenu"
+        />
       </main>
     </div>
 
@@ -92,11 +137,19 @@ export default {
     return {
       userName: "Tony Shaw",
       userEmail: "tony.shaw@apostolicsoncall.com",
-      activeMenuItem: "Overview", // Default to Overview
+      activeMenuItem: "Overview", // Default active menu item
+      expandedMenu: null, // Tracks which menu is expanded
       isSidebarOpen: false, // Mobile sidebar visibility
       menuItems: [
         { name: "Overview", label: "Dashboard" },
-        { name: "Profile", label: "Profile" },
+        {
+          name: "Profile",
+          label: "Profile",
+          children: [
+            { name: "ViewProfile", label: "View Profile" },
+            { name: "EditProfile", label: "Edit Profile" },
+          ],
+        },
         { name: "ManageUsers", label: "Manage Users" },
         { name: "Settings", label: "Settings" },
       ],
@@ -104,13 +157,15 @@ export default {
   },
   computed: {
     activeMenuItemComponent() {
-      // Dynamically resolve components
       const components = {
         Overview: defineAsyncComponent(() =>
           import("./admin/OverviewPage.vue")
         ),
-        Profile: defineAsyncComponent(() =>
+        ViewProfile: defineAsyncComponent(() =>
           import("./admin/ProfilePage.vue")
+        ),
+        EditProfile: defineAsyncComponent(() =>
+          import("./admin/EditProfilePage.vue")
         ),
         ManageUsers: defineAsyncComponent(() =>
           import("./admin/ManageUsersPage.vue")
@@ -119,13 +174,31 @@ export default {
           import("./admin/SettingsPage.vue")
         ),
       };
-      return components[this.activeMenuItem] || components.Overview; // Fallback to Overview
+      return components[this.activeMenuItem] || components.Overview;
     },
   },
   methods: {
     setActiveMenu(item) {
-      this.activeMenuItem = item.name; // Update active menu item
-      this.isSidebarOpen = false; // Close sidebar on selection (mobile)
+      this.activeMenuItem = item.name;
+      this.isSidebarOpen = false; // Close sidebar on mobile
+
+      // Navigate based on whether the item is a parent or child
+      if (item.children) {
+        this.toggleMenu(item.name);
+      } else {
+        const routeMap = {
+          Overview: "/dashboard",
+          ManageUsers: "/dashboard/manage-users",
+          Settings: "/dashboard/settings",
+          ViewProfile: "/dashboard/profile",
+          EditProfile: "/dashboard/profile/edit",
+        };
+        const route = routeMap[item.name] || `/dashboard/${item.name.toLowerCase()}`;
+        this.$router.push(route);
+      }
+    },
+    toggleMenu(menuName) {
+      this.expandedMenu = this.expandedMenu === menuName ? null : menuName;
     },
   },
 };
