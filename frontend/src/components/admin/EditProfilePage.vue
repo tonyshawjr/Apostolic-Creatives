@@ -8,21 +8,30 @@
       <h2 class="text-lg font-medium text-gray-600">Profile Details</h2>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <!-- Profile Photo -->
-        <div>
-          <label class="block text-sm font-medium text-gray-700">Profile Photo</label>
+  <div class="shrink-0 flex flex-row items-center gap-4">
+    <img class="h-16 w-16 object-cover rounded-full" src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=3000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Current profile photo" />
+  
+  <label class="block">
+    <span class="sr-only">Choose profile photo</span>
           <input
             type="file"
             @change="updatePhoto"
-            class="mt-2 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-600 hover:file:bg-blue-100"
+            class="block w-full text-sm text-slate-500
+      file:mr-4 file:py-2 file:px-4
+      file:rounded-full file:border-0
+      file:text-sm file:font-semibold
+      file:bg-violet-50 file:text-violet-700
+      hover:file:bg-violet-100"
           />
-        </div>
+          </label>
+          </div>
         <!-- Full Name -->
         <div>
           <label class="block text-sm font-medium text-gray-700">Full Name</label>
           <input
             type="text"
             v-model="profile.name"
-            class="mt-2 w-full border-gray-300 rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            class="mt-2 w-full border-gray-300"
           />
         </div>
         <!-- Location -->
