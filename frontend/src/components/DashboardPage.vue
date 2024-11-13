@@ -3,6 +3,7 @@
     <!-- Sidebar -->
     <aside :class="[
       'fixed z-40 w-100 transition-transform duration-300 md:static md:translate-x-0',
+      isSidebarOpen ? 'translate-x-0 bg-white' : '-translate-x-full',
       isSidebarOpen ? 'translate-x-0' : '-translate-x-full',
     ]">
       <div class="p-6">
@@ -65,7 +66,9 @@
           </button>
 
           <!-- Mobile Title -->
-          <h1 class="text-xl font-bold text-gray-700">Apostolic Creatives</h1>
+          <h1 class="text-2xl font-bold text-gray-800 cursor-pointer" @click="navigateToDashboard">
+            Apostolic Creatives
+          </h1>
 
           <!-- Notification and Avatar -->
           <div class="flex items-center space-x-4">
@@ -257,6 +260,10 @@ export default {
       } else {
         this.setActiveMenu(item); // Navigate directly if no children
       }
+    },
+    navigateToDashboard() {
+      this.activeMenuItem = "Overview";
+      this.$router.push("/dashboard"); // Redirect to the Dashboard route
     },
     toggleDropdown() {
       this.dropdownOpen = !this.dropdownOpen;
