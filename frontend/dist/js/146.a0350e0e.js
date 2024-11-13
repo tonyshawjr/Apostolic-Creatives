@@ -1,0 +1,2 @@
+"use strict";(self["webpackChunkfrontend"]=self["webpackChunkfrontend"]||[]).push([[146],{1146:function(n,e,r){r.r(e),r.d(e,{default:function(){return c}});var a=r(9726);function u(n,e,r,u,t,s){return(0,a.uX)(),(0,a.CE)("div",null,e[0]||(e[0]=[(0,a.Lk)("h1",null,"Manage Users Page",-1)]))}var t={name:"ManageUsersPage"},s=r(6262);const f=(0,s.A)(t,[["render",u]]);var c=f}}]);
+//# sourceMappingURL=146.a0350e0e.js.map
