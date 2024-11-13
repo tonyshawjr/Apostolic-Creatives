@@ -9,9 +9,9 @@
         <!-- Profile Picture -->
         <div class="flex-shrink-0">
           <img
-            :src="profile.photo || 'https://via.placeholder.com/150'"
+            :src="profile.photo || 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=3000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'"
             alt="Profile Photo"
-            class="w-24 h-24 md:w-32 md:h-32 rounded-lg border border-gray-200 shadow-sm"
+            class="w-24 h-24 md:w-32 md:h-32  border border-gray-200 shadow-sm object-cover"
           />
         </div>
 
