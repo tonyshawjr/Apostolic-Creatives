@@ -207,16 +207,27 @@ export default {
       expandedMenu: null,
       isSidebarOpen: false,
       menuItems: [
-        { name: "Overview", label: "Dashboard" },
-        {
-          name: "Profile", label: "Profile", children: [
-            { name: "ViewProfile", label: "View Profile" },
-            { name: "EditProfile", label: "Edit Profile" },
-          ]
-        },
-        { name: "ManageUsers", label: "Manage Users" },
-        { name: "Settings", label: "Settings" },
-      ],
+  { name: "Overview", label: "Dashboard" },
+  {
+    name: "Profile",
+    label: "Profile",
+    children: [
+      { name: "ViewProfile", label: "View Profile" },
+      { name: "EditProfile", label: "Edit Profile" },
+    ],
+  },
+  {
+    name: "ManageUsers",
+    label: "Manage Users",
+    children: [
+      { name: "CreativesList", label: "Creatives" },
+      { name: "PartnersList", label: "Partners" },
+      { name: "TeamMembersList", label: "Team Members" },
+    ],
+  },
+  { name: "Settings", label: "Settings" },
+],
+
     };
   },
   computed: {
@@ -250,13 +261,16 @@ export default {
       this.expandedMenu = item.children ? this.expandedMenu : null; // Closes expanded menu for child items
       this.isSidebarOpen = false; // Closes the sidebar on mobile
       const routeMap = {
-        Overview: "/dashboard",
-        ManageUsers: "/dashboard/manage-users",
-        EditUsers: "/dashboard/manage-users/profile",
-        Settings: "/dashboard/settings",
-        ViewProfile: "/dashboard/profile",
-        EditProfile: "/dashboard/profile/edit",
-      };
+  Overview: "/dashboard",
+  ManageUsers: "/dashboard/manage-users",
+  CreativesList: "/dashboard/manage-users/creatives",
+  TeamMembersList: "/dashboard/manage-users/team-members",
+  PartnersList: "/dashboard/manage-users/partners",
+  ViewProfile: "/dashboard/profile",
+  EditProfile: "/dashboard/profile/edit",
+  Settings: "/dashboard/settings",
+};
+
       const route = routeMap[item.name] || `/dashboard/${item.name.toLowerCase()}`;
       this.$router.push(route); // Navigate to the route
     },
