@@ -2,7 +2,7 @@
   <div class="space-y-6">
     <h1 class="text-2xl font-bold text-gray-800">Manage Creatives</h1>
 
-    <!-- Search and Filter -->
+    <!-- Search and Add New Creative -->
     <div class="flex flex-wrap justify-between items-center space-y-4 md:space-y-0">
       <!-- Search Input -->
       <div class="w-full md:w-auto md:flex-1 md:max-w-md relative">
@@ -33,6 +33,8 @@
             <tr class="bg-gray-100 border-b">
               <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">Name</th>
               <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">Email</th>
+              <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">Verified</th>
+              <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">Status</th>
               <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">Actions</th>
             </tr>
           </thead>
@@ -40,6 +42,24 @@
             <tr v-for="user in filteredUsers" :key="user.id" class="border-t even:bg-gray-50 relative">
               <td class="px-4 py-2">{{ user.name }}</td>
               <td class="px-4 py-2">{{ user.email }}</td>
+              <td class="px-4 py-2">
+                <span
+                  :class="[
+                    user.verified ? 'bg-green-100 text-green-700' : 'bg-red-400 text-white',
+                    'px-3 py-1 rounded-full text-sm font-medium'
+                  ]">
+                  {{ user.verified ? 'Verified' : 'Not Verified' }}
+                </span>
+              </td>
+              <td class="px-4 py-2">
+                <span
+                  :class="[
+                    user.active ? 'bg-blue-100 text-gray-600' : 'bg-red-200 text-gray-600',
+                    'px-3 py-1 rounded-full text-sm font-medium'
+                  ]">
+                  {{ user.active ? 'Active' : 'Inactive' }}
+                </span>
+              </td>
               <td class="px-4 py-2 relative">
                 <div class="relative">
                   <button @click="toggleDropdown(user.id)" :data-button-id="user.id"
@@ -60,8 +80,10 @@
                     </button>
                     <button @click="editUser(user)"
                       class="flex items-center px-4 py-2 text-gray-600 hover:bg-gray-100 w-full">Edit</button>
-                    <button @click="deactivateUser(user)"
-                      class="flex items-center px-4 py-2 text-gray-600 hover:bg-red-500 hover:text-white w-full">Deactivate</button>
+                    <button @click="toggleUserStatus(user)"
+                      class="flex items-center px-4 py-2 text-gray-600 hover:bg-red-500 hover:text-white w-full">
+                      {{ user.active ? 'Deactivate' : 'Activate' }}
+                    </button>
                   </div>
                 </div>
               </td>
@@ -81,7 +103,7 @@
               <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
                 stroke="currentColor" stroke-width="2">
                 <circle cx="5" cy="12" r="1" />
-                <circle cx="12" y="12" r="1" />
+                <circle cx="12" cy="12" r="1" />
                 <circle cx="19" cy="12" r="1" />
               </svg>
             </button>
@@ -98,9 +120,9 @@
                 class="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 w-full text-left">
                 Edit
               </button>
-              <button @click="deactivateUser(user)"
+              <button @click="toggleUserStatus(user)"
                 class="block px-4 py-2 text-sm bg-red-500 text-white w-full text-left">
-                Deactivate
+                {{ user.active ? 'Deactivate' : 'Activate' }}
               </button>
             </div>
           </div>
@@ -109,7 +131,7 @@
       </div>
     </div>
 
-    <!-- Pagination and Rows per Page -->
+    <!-- Pagination and Rows Per Page -->
     <div class="flex flex-col items-center space-y-4 mt-4">
       <!-- Pagination Controls -->
       <div class="flex items-center justify-center space-x-4">
@@ -124,7 +146,7 @@
         </button>
       </div>
 
-      <!-- Rows Per Page -->
+      <!-- Rows Per Page Selector -->
       <div class="flex items-center justify-center space-x-2">
         <label for="rowsPerPage" class="text-sm text-gray-600">Rows per page:</label>
         <select id="rowsPerPage" v-model="rowsPerPage" @change="paginate"
@@ -146,10 +168,10 @@ export default {
       rowsPerPage: 5,
       currentPage: 1,
       users: [
-        { id: 1, name: "Tre Tate", email: "tre@example.com" },
-        { id: 2, name: "Peyton Whitehurst", email: "peyton@example.com" },
-        { id: 3, name: "Annalea StClair", email: "anna@example.com" },
-        { id: 4, name: "Ethan Short", email: "ethan@example.com" },
+        { id: 1, name: "Tre Tate", email: "tre@example.com", verified: true, active: true },
+        { id: 2, name: "Peyton Whitehurst", email: "peyton@example.com", verified: false, active: false },
+        { id: 3, name: "Annalea StClair", email: "anna@example.com", verified: true, active: true },
+        { id: 4, name: "Ethan Short", email: "ethan@example.com", verified: false, active: true },
         // Add more creatives
       ],
       filteredUsers: [],
@@ -175,19 +197,17 @@ export default {
     editUser(user) {
       console.log("Edit user:", user);
     },
-    deactivateUser(user) {
-      if (confirm(`Are you sure you want to deactivate ${user.name}?`)) {
-        console.log(`Deactivated user: ${user.name}`);
-      }
+    toggleUserStatus(user) {
+      user.active = !user.active;
+      console.log(`${user.name} is now ${user.active ? "Active" : "Inactive"}`);
     },
     toggleDropdown(userId) {
       this.dropdownOpen = this.dropdownOpen === userId ? null : userId;
     },
     paginate() {
-      this.filteredUsers = this.users.slice(
-        (this.currentPage - 1) * this.rowsPerPage,
-        this.currentPage * this.rowsPerPage
-      );
+      const startIndex = (this.currentPage - 1) * this.rowsPerPage;
+      const endIndex = startIndex + this.rowsPerPage;
+      this.filteredUsers = this.users.slice(startIndex, endIndex);
     },
     goToPreviousPage() {
       if (this.currentPage > 1) {
