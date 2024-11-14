@@ -4,11 +4,9 @@ import ProtectedPage from "../components/ProtectedPage.vue";
 import DashboardPage from "../components/DashboardPage.vue";
 
 // Lazy-loaded components for optimization
-const ProfilePage = () => import("../components/admin/ProfilePage.vue");
 const EditProfilePage = () => import("../components/admin/EditProfilePage.vue");
 const SettingsPage = () => import("../components/admin/SettingsPage.vue");
 const ManageUsersPage = () => import("../components/admin/ManageUsersPage.vue");
-const ProfileView = () => import("../components/admin/manage-users/ProfileView.vue");
 
 const routes = [
   {
@@ -28,7 +26,7 @@ const routes = [
       {
         path: "profile",
         name: "Profile",
-        component: ProfilePage,
+        component: () => import("../components/admin/ProfilePage.vue"),
       },
       {
         path: "profile/edit",
@@ -39,11 +37,44 @@ const routes = [
         path: "manage-users",
         name: "ManageUsers",
         component: ManageUsersPage,
-      },
-      {
-        path: "manage-users/profile/:id",
-        name: "ProfileView",
-        component: ProfileView,
+        children: [
+          {
+            path: "creatives",
+            name: "CreativesList",
+            component: () =>
+              import("../components/admin/manage-users/CreativesList.vue"),
+          },
+          {
+            path: "team-members",
+            name: "TeamMembersList",
+            component: () =>
+              import("../components/admin/manage-users/TeamMembersList.vue"),
+          },
+          {
+            path: "partners",
+            name: "PartnersList",
+            component: () =>
+              import("../components/admin/manage-users/PartnersList.vue"),
+          },
+          {
+            path: "creative/:id",
+            name: "CreativeProfile",
+            component: () =>
+              import("../components/admin/manage-users/CreativeProfile.vue"),
+          },
+          {
+            path: "team-member/:id",
+            name: "TeamMemberProfile",
+            component: () =>
+              import("../components/admin/manage-users/TeamMemberProfile.vue"),
+          },
+          {
+            path: "partner/:id",
+            name: "PartnerProfile",
+            component: () =>
+              import("../components/admin/manage-users/PartnerProfile.vue"),
+          },
+        ],
       },
       {
         path: "settings",
