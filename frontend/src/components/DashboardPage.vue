@@ -89,21 +89,24 @@
                 alt="User Avatar" class="h-10 w-10 rounded-full cursor-pointer object-cover" />
 
               <!-- Dropdown Menu -->
-              <div v-show="dropdownOpen"
-                class="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg">
-                <button class="w-full text-left px-4 py-2 text-gray-600 hover:bg-gray-100">
-                  Profile & Account
-                </button>
-                <button class="w-full text-left px-4 py-2 text-gray-600 hover:bg-gray-100">
-                  Settings
-                </button>
-                <button class="w-full text-left px-4 py-2 text-gray-600 hover:bg-gray-100">
-                  Manage Team
-                </button>
-                <button class="w-full text-left px-4 py-2 text-red-600 hover:bg-red-50">
-                  Sign Out
-                </button>
-              </div>
+              <div
+  v-show="dropdownOpen"
+  class="absolute right-0 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-50"
+>
+  <button class="w-full text-left px-4 py-2 text-gray-600 hover:bg-gray-100">
+    Profile & Account
+  </button>
+  <button class="w-full text-left px-4 py-2 text-gray-600 hover:bg-gray-100">
+    Settings
+  </button>
+  <button class="w-full text-left px-4 py-2 text-gray-600 hover:bg-gray-100">
+    Manage Team
+  </button>
+  <button class="w-full text-left px-4 py-2 text-red-600 hover:bg-red-50">
+    Sign Out
+  </button>
+</div>
+
             </div>
           </div>
         </div>
@@ -276,5 +279,14 @@ export default {
 <style scoped>
 aside {
   height: 100vh;
+}
+html,
+body {
+  overflow-x: hidden;
+}
+
+header {
+  max-width: 100%;
+  box-sizing: border-box;
 }
 </style>
