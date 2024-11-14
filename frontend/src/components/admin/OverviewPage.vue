@@ -68,9 +68,9 @@
       </div>
 
       <!-- Tables Section -->
-      <div class="grid grid-cols-1 gap-6 mt-6">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mt-6">
         <!-- Jobs Pending Approval Table -->
-        <div class="bg-white shadow-xl rounded-lg p-6">
+        <div class="bg-white shadow-xl rounded-lg p-6 md:col-span-3">
           <h2 class="text-lg font-medium text-gray-600 mb-4">Jobs Pending Approval</h2>
           <div class="overflow-x-auto">
             <table class="w-full table-auto border-collapse">
@@ -98,7 +98,6 @@
             </table>
           </div>
         </div>
-
         <!-- Missed Payments Table -->
         <div class="bg-white shadow-xl rounded-lg p-6">
           <h2 class="text-lg font-medium text-gray-600 mb-4">Missed Payments</h2>
@@ -123,12 +122,66 @@
           </div>
         </div>
       </div>
+      <div class="grid grid-cols-1 gap-6 mt-6">
+        <!-- Expiring Pastoral Recommendations Table -->
+        <div class="bg-white shadow-xl rounded-lg p-6">
+          <h2 class="text-lg font-medium text-gray-600 mb-4">Expiring Pastoral Recommendations</h2>
+          <div class="overflow-x-auto">
+            <table class="w-full table-auto border-collapse">
+              <thead>
+                <tr class="bg-gray-100 border-b">
+                  <th class="px-4 py-2 text-left text-sm text-gray-600">Creative</th>
+                  <th class="px-4 py-2 text-left text-sm text-gray-600">Church</th>
+                  <th class="px-4 py-2 text-left text-sm text-gray-600">Pastor</th>
+                  <th class="px-4 py-2 text-left text-sm text-gray-600">Phone</th>
+                  <th class="px-4 py-2 text-left text-sm text-gray-600">Days Left</th>
+                  <th class="px-4 py-2 text-left text-sm text-gray-600">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Use paginatedRecommendations for proper pagination -->
+                <tr v-for="recommendation in paginatedRecommendations" :key="recommendation.id"
+                  class="border-t even:bg-gray-50" :class="{ 'bg-red-50': recommendation.daysLeft < 14 }">
+                  <td class="px-4 py-2">{{ recommendation.creativeName }}</td>
+                  <td class="px-4 py-2">{{ recommendation.churchName }}</td>
+                  <td class="px-4 py-2">{{ recommendation.pastorName }}</td>
+                  <td class="px-4 py-2">{{ recommendation.pastorPhone }}</td>
+                  <td class="px-4 py-2 text-sm font-medium" :class="{ 'text-red-600': recommendation.daysLeft < 14 }">
+                    {{ recommendation.daysLeft }} days
+                  </td>
+                  <td class="px-4 py-2 space-x-2">
+                    <button class="button text-blue-600 hover:text-blue-800">Update</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="flex justify-between items-center mt-4">
+            <!-- Pagination Controls -->
+            <button @click="previousPage" :disabled="currentPage === 1"
+              class="button px-4 py-2 text-sm bg-gray-200 rounded-lg hover:bg-gray-300">Previous</button>
+            <span class="text-sm text-gray-600">Page {{ currentPage }} of {{ totalPages }}</span>
+            <button @click="nextPage" :disabled="currentPage === totalPages"
+              class="button px-4 py-2 text-sm bg-gray-200 rounded-lg hover:bg-gray-300">Next</button>
+          </div>
+        </div>
+
+      </div>
     </div>
   </div>
 </template>
-
 <script>
-import { Chart, LineController, LineElement, PointElement, LinearScale, CategoryScale, Tooltip, Legend, Title } from "chart.js";
+import {
+  Chart,
+  LineController,
+  LineElement,
+  PointElement,
+  LinearScale,
+  CategoryScale,
+  Tooltip,
+  Legend,
+  Title,
+} from "chart.js";
 
 // Register necessary components
 Chart.register(LineController, LineElement, PointElement, LinearScale, CategoryScale, Tooltip, Legend, Title);
@@ -139,6 +192,8 @@ export default {
     return {
       loading: true,
       error: false,
+      currentPage: 1, // Current page for pagination
+      itemsPerPage: 5, // Number of items to show per page
       metrics: {
         activeCreatives: 0,
         inactiveCreatives: 0,
@@ -149,7 +204,24 @@ export default {
       },
       pendingJobs: [],
       missedPayments: [],
+      expiringRecommendations: [],
     };
+  },
+  computed: {
+    // Sort recommendations by daysLeft ascending
+    sortedRecommendations() {
+      return [...this.expiringRecommendations].sort((a, b) => a.daysLeft - b.daysLeft);
+    },
+    // Calculate total number of pages
+    totalPages() {
+      return Math.ceil(this.sortedRecommendations.length / this.itemsPerPage);
+    },
+    // Paginate recommendations based on currentPage
+    paginatedRecommendations() {
+      const start = (this.currentPage - 1) * this.itemsPerPage;
+      const end = start + this.itemsPerPage;
+      return this.sortedRecommendations.slice(start, end);
+    },
   },
   methods: {
     fetchData() {
@@ -170,71 +242,154 @@ export default {
           { id: 1, name: "John Doe" },
           { id: 2, name: "Jane Smith" },
         ];
+        this.expiringRecommendations = [
+          {
+            id: 1,
+            creativeName: "John Doe",
+            churchName: "Apostolic Faith Assembly",
+            pastorName: "General Smith",
+            pastorPhone: "555-123-4567",
+            daysLeft: 10,
+          },
+          {
+            id: 2,
+            creativeName: "Jane Smith",
+            churchName: "Pentecostal Lighthouse Church",
+            pastorName: "John Johnson",
+            pastorPhone: "555-987-6543",
+            daysLeft: 5,
+          },
+          {
+            id: 3,
+            creativeName: "Michael Brown",
+            churchName: "New Life Apostolic Church",
+            pastorName: "Ted Davis",
+            pastorPhone: "555-456-7890",
+            daysLeft: 20,
+          },
+          {
+            id: 4,
+            creativeName: "Sarah Wilson",
+            churchName: "True Gospel Assembly",
+            pastorName: "Greg Williams",
+            pastorPhone: "555-654-3210",
+            daysLeft: 30,
+          },
+          {
+            id: 5,
+            creativeName: "Emily Taylor",
+            churchName: "Living Waters Apostolic Center",
+            pastorName: "Jose Martinez",
+            pastorPhone: "555-789-1234",
+            daysLeft: 28,
+          },
+          {
+            id: 6,
+            creativeName: "Chris Green",
+            churchName: "Faith Temple Apostolic",
+            pastorName: "Tim Lee",
+            pastorPhone: "555-321-6547",
+            daysLeft: 15,
+          },
+        ];
         this.loading = false;
         this.$nextTick(() => this.renderChart());
       }, 1000);
     },
+    // Handle Next Page
+    nextPage() {
+      if (this.currentPage < this.totalPages) {
+        this.currentPage++;
+      }
+    },
+    // Handle Previous Page
+    previousPage() {
+      if (this.currentPage > 1) {
+        this.currentPage--;
+      }
+    },
     renderChart() {
-      const chartCanvas = document.getElementById("platformActivityChart");
-      if (!chartCanvas) return;
-      const ctx = chartCanvas.getContext("2d");
-      new Chart(ctx, {
-        type: "line",
-        data: {
-          labels: ["January", "February", "March", "April", "May"],
-          datasets: [
-            {
-              label: "Inactive Creatives",
-              data: [10, 20, 15, 25, 30],
-              borderColor: "#7C3AED",
-              backgroundColor: "rgba(124, 58, 237, 0.2)",
-            },
-            {
-              label: "Open Roles",
-              data: [5, 15, 10, 20, 25],
-              borderColor: "#F59E0B",
-              backgroundColor: "rgba(245, 158, 11, 0.2)",
-            },
-          ],
+  const chartCanvas = document.getElementById("platformActivityChart");
+  if (!chartCanvas) return;
+
+  const ctx = chartCanvas.getContext("2d");
+
+  // Generate realistic data for the past six months
+  const currentDate = new Date();
+  const months = [];
+  const inactiveCreativesData = [];
+  const openRolesData = [];
+
+  for (let i = 5; i >= 0; i--) {
+    const month = new Date(currentDate.getFullYear(), currentDate.getMonth() - i, 1);
+    months.push(month.toLocaleString("default", { month: "long" }));
+
+    // Simulated data for inactive creatives and open roles
+    inactiveCreativesData.push(Math.floor(Math.random() * 15) + 20); // Between 20-35
+    openRolesData.push(Math.floor(Math.random() * 10) + 5);         // Between 5-15
+  }
+
+  // Use the dynamic metrics for the current month
+  inactiveCreativesData[5] = this.metrics.inactiveCreatives; // Current month's data
+  openRolesData[5] = this.metrics.openJobs;                 // Current month's data
+
+  new Chart(ctx, {
+    type: "line",
+    data: {
+      labels: months,
+      datasets: [
+        {
+          label: "Inactive Creatives",
+          data: inactiveCreativesData,
+          borderColor: "#7C3AED",
+          backgroundColor: "rgba(124, 58, 237, 0.2)",
         },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            title: {
-              display: true,
-              text: "Recent Platform Activity",
-              font: { size: 18 },
-              color: "#4B5563",
-              padding: 20,
-            },
-            legend: {
-              labels: {
-                color: "#4B5563",
-              },
-            },
-          },
-          scales: {
-            x: {
-              grid: {
-                color: "#E5E7EB", // Light gridlines for the x-axis
-              },
-              ticks: {
-                color: "#4B5563",
-              },
-            },
-            y: {
-              grid: {
-                color: "#E5E7EB", // Light gridlines for the y-axis
-              },
-              ticks: {
-                color: "#4B5563",
-              },
-            },
+        {
+          label: "Open Roles",
+          data: openRolesData,
+          borderColor: "#F59E0B",
+          backgroundColor: "rgba(245, 158, 11, 0.2)",
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        title: {
+          display: true,
+          text: "Recent Platform Activity (Last 6 Months)",
+          font: { size: 18 },
+          color: "#4B5563",
+          padding: 20,
+        },
+        legend: {
+          labels: {
+            color: "#4B5563",
           },
         },
-      });
-    }
+      },
+      scales: {
+        x: {
+          grid: {
+            color: "#E5E7EB", // Light gridlines for the x-axis
+          },
+          ticks: {
+            color: "#4B5563",
+          },
+        },
+        y: {
+          grid: {
+            color: "#E5E7EB", // Light gridlines for the y-axis
+          },
+          ticks: {
+            color: "#4B5563",
+          },
+        },
+      },
+    },
+  });
+}
 
   },
   mounted() {
