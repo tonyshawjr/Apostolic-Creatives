@@ -6,7 +6,7 @@
     <div class="flex flex-wrap justify-between items-center space-y-4 md:space-y-0">
       <!-- Role Filters -->
       <!-- Dynamic Role Filters -->
-      <div class="flex flex-wrap space-x-2">
+      <div class="flex flex-wrap justify-center md:justify-start gap-2">
         <button v-for="role in roles" :key="role" @click="filterUsersByRole(role)" :class="[
           'px-4 py-2 rounded-lg text-sm font-medium transition-all',
           role === activeRole ? 'bg-purple-500 text-white' : 'bg-gray-200 hover:bg-gray-300'
@@ -14,6 +14,7 @@
           {{ role }}
         </button>
       </div>
+
 
 
       <!-- Search Input -->
@@ -83,13 +84,14 @@
           </tbody>
         </table>
       </div>
-
       <!-- Responsive Cards for Mobile -->
       <div class="block md:hidden space-y-4">
-        <div v-for="user in filteredUsers" :key="user.id" class="p-4 border rounded-lg bg-gray-50 shadow-sm">
-          <div class="flex justify-between items-center">
+        <div v-for="user in filteredUsers" :key="user.id" class="p-4 border rounded-lg bg-gray-50 shadow-sm relative">
+          <div class="flex justify-between items-center relative">
             <h2 class="text-lg font-bold text-gray-800">{{ user.name }}</h2>
-            <button @click="toggleDropdown(user.id)" class="text-gray-600 hover:text-gray-800">
+            <!-- Ellipsis Button -->
+            <button @click.stop="toggleDropdown(user.id)" class="text-gray-600 hover:text-gray-800 relative"
+              :data-button-id="user.id">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
                 stroke="currentColor" stroke-width="2">
                 <circle cx="5" cy="12" r="1" />
@@ -97,49 +99,59 @@
                 <circle cx="19" cy="12" r="1" />
               </svg>
             </button>
-          </div>
-          <p class="text-sm text-gray-600">{{ user.email }}</p>
-          <p class="text-sm text-gray-500 mt-1">Role: {{ user.role }}</p>
 
-          <!-- Dropdown -->
-          <div v-show="dropdownOpen === user.id"
-            class="mt-2 w-32 bg-white rounded-lg shadow-lg z-50 border border-gray-200">
-            <button @click="editUser(user)"
-              class="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 w-full text-left">
-              Edit
-            </button>
-            <button @click="deleteUser(user)"
-              class="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 w-full text-left">
-              Delete
-            </button>
+            <!-- Dropdown -->
+            <div v-if="dropdownOpen === user.id"
+              class="absolute top-full right-0 mt-2 w-32 bg-white rounded-lg shadow-lg z-50 border border-gray-200"
+              :data-dropdown-id="user.id">
+              <button @click="ViewUser(user)"
+                class="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 w-full text-left">
+                View
+              </button>
+              <button @click="editUser(user)"
+                class="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 w-full text-left">
+                Edit
+              </button>
+              <button @click="deactivateUser(user)"
+                class="block px-4 py-2 text-sm bg-red-500 text-white w-full text-left">
+                Deactivate
+              </button>
+            </div>
           </div>
+          <p class="text-sm text-gray-600 font-medium">{{ user.email }}</p>
+          <p class="text-sm text-gray-500 mt-1">{{ user.role }}</p>
         </div>
       </div>
-    </div>
 
-    <div class="flex justify-between items-center mt-4">
+
+
+    </div>
+    <!-- Pagination and Rows per Page -->
+    <div class="flex flex-col items-center space-y-4 mt-4">
+      <!-- Pagination Controls -->
+      <div class="flex items-center justify-center space-x-4">
+        <button @click="goToPreviousPage" :disabled="currentPage === 1"
+          class="px-4 py-2 text-sm bg-gray-200 rounded-lg hover:bg-gray-300 disabled:opacity-50">
+          Previous
+        </button>
+        <span class="text-sm text-gray-600">Page {{ currentPage }} of {{ totalPages }}</span>
+        <button @click="goToNextPage" :disabled="currentPage === totalPages"
+          class="px-4 py-2 text-sm bg-gray-200 rounded-lg hover:bg-gray-300 disabled:opacity-50">
+          Next
+        </button>
+      </div>
+
       <!-- Rows Per Page -->
-      <div class="flex items-center space-x-2">
+      <div class="flex items-center justify-center space-x-2">
         <label for="rowsPerPage" class="text-sm text-gray-600">Rows per page:</label>
         <select id="rowsPerPage" v-model="rowsPerPage" @change="paginate"
           class="border rounded-lg px-2 py-1 text-sm text-gray-600">
           <option v-for="option in [5, 10, 20]" :key="option" :value="option">{{ option }}</option>
         </select>
       </div>
-
-      <!-- Pagination Controls -->
-      <div class="flex items-center space-x-4">
-        <button @click="goToPreviousPage" :disabled="currentPage === 1"
-          class="button px-4 py-2 text-sm bg-gray-200 rounded-lg hover:bg-gray-300 disabled:opacity-50">
-          Previous
-        </button>
-        <span class="text-sm text-gray-600">Page {{ currentPage }} of {{ totalPages }}</span>
-        <button @click="goToNextPage" :disabled="currentPage === totalPages"
-          class="button px-4 py-2 text-sm bg-gray-200 rounded-lg hover:bg-gray-300 disabled:opacity-50">
-          Next
-        </button>
-      </div>
     </div>
+
+
 
   </div>
 </template>
@@ -173,8 +185,16 @@ export default {
   },
   computed: {
     totalPages() {
-      return Math.ceil(this.filteredUsers.length / this.rowsPerPage);
+      const filteredCount = this.users.filter(user => {
+        const matchesRole = this.activeRole === "All" || user.role === this.activeRole;
+        const matchesSearch =
+          user.name.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+          user.email.toLowerCase().includes(this.searchTerm.toLowerCase());
+        return matchesRole && matchesSearch;
+      }).length;
+      return Math.ceil(filteredCount / this.rowsPerPage);
     },
+
   },
   methods: {
     filterUsersByRole(role) {
@@ -185,28 +205,40 @@ export default {
       this.filterAndPaginateUsers();
     },
     filterAndPaginateUsers() {
-      let filtered = this.users.filter(user => {
+      // Step 1: Filter users by role and search term
+      const filtered = this.users.filter(user => {
         const matchesRole = this.activeRole === "All" || user.role === this.activeRole;
-        const matchesSearch = user.name.toLowerCase().includes(this.searchTerm.toLowerCase()) || user.email.toLowerCase().includes(this.searchTerm.toLowerCase());
+        const matchesSearch =
+          user.name.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+          user.email.toLowerCase().includes(this.searchTerm.toLowerCase());
         return matchesRole && matchesSearch;
       });
-      this.filteredUsers = filtered.slice(0, this.rowsPerPage);
+
+      // Step 2: Paginate the filtered users
+      const startIndex = (this.currentPage - 1) * this.rowsPerPage;
+      const endIndex = startIndex + this.rowsPerPage;
+
+      this.filteredUsers = filtered.slice(startIndex, endIndex);
     },
+
     paginate() {
+      this.currentPage = 1; // Reset to the first page when rows per page changes
       this.filterAndPaginateUsers();
     },
+
     goToPreviousPage() {
       if (this.currentPage > 1) {
         this.currentPage--;
-        this.paginate();
+        this.filterAndPaginateUsers();
       }
     },
     goToNextPage() {
       if (this.currentPage < this.totalPages) {
         this.currentPage++;
-        this.paginate();
+        this.filterAndPaginateUsers();
       }
     },
+
     addNewUser() {
       console.log("Redirect to Add New User page...");
     },
@@ -225,7 +257,6 @@ export default {
       this.dropdownOpen = this.dropdownOpen === userId ? null : userId;
     },
     closeDropdownOnOutsideClick(event) {
-      // Check if the click was outside the dropdown or the button
       const dropdown = document.querySelector(`[data-dropdown-id="${this.dropdownOpen}"]`);
       const button = document.querySelector(`[data-button-id="${this.dropdownOpen}"]`);
 
@@ -233,6 +264,7 @@ export default {
         this.dropdownOpen = null;
       }
     },
+
 
   },
   mounted() {
@@ -244,3 +276,15 @@ export default {
   },
 };
 </script>
+<style scoped>
+.dropdown {
+  z-index: 50;
+}
+
+@screen sm {
+  .custom-mobile-layout {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+</style>
