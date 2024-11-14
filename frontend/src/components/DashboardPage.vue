@@ -183,7 +183,7 @@
 
       <!-- Dynamic Content -->
       <main class="flex-1 p-6 space-y-6">
-        <component :is="activeMenuItemComponent" @set-active-menu="setActiveMenu" />
+        <router-view />
       </main>
     </div>
 
@@ -228,6 +228,9 @@ export default {
         ManageUsers: defineAsyncComponent(() =>
           import("./admin/ManageUsersPage.vue")
         ),
+        EditUsers: defineAsyncComponent(() =>
+          import("./admin/manage-users/ProfileView.vue")
+        ),
         Settings: defineAsyncComponent(() =>
           import("./admin/SettingsPage.vue")
         ),
@@ -249,6 +252,7 @@ export default {
       const routeMap = {
         Overview: "/dashboard",
         ManageUsers: "/dashboard/manage-users",
+        EditUsers: "/dashboard/manage-users/profile",
         Settings: "/dashboard/settings",
         ViewProfile: "/dashboard/profile",
         EditProfile: "/dashboard/profile/edit",

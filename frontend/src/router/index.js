@@ -1,62 +1,60 @@
-import { createRouter, createWebHistory } from 'vue-router';
-import LoginPage from '../components/LoginPage.vue';
-import ProtectedPage from '../components/ProtectedPage.vue';
+import { createRouter, createWebHistory } from "vue-router";
+import LoginPage from "../components/LoginPage.vue";
+import ProtectedPage from "../components/ProtectedPage.vue";
 import DashboardPage from "../components/DashboardPage.vue";
 
 // Lazy-loaded components for optimization
-const ProfilePage = () => import('../components/admin/ProfilePage.vue');
-const EditProfilePage = () => import('../components/admin/EditProfilePage.vue');
-const SettingsPage = () => import('../components/admin/SettingsPage.vue');
-const ManageUsersPage = () => import('../components/admin/ManageUsersPage.vue');
-const ProfileView = () => import('../components/admin/manage-users/ProfileView.vue');
+const ProfilePage = () => import("../components/admin/ProfilePage.vue");
+const EditProfilePage = () => import("../components/admin/EditProfilePage.vue");
+const SettingsPage = () => import("../components/admin/SettingsPage.vue");
+const ManageUsersPage = () => import("../components/admin/ManageUsersPage.vue");
+const ProfileView = () => import("../components/admin/manage-users/ProfileView.vue");
 
 const routes = [
   {
-    path: '/',
-    name: 'Login',
+    path: "/",
+    name: "Login",
     component: LoginPage,
   },
   {
-    path: '/dashboard',
+    path: "/dashboard",
     component: DashboardPage, // Main layout for all dashboard pages
     children: [
       {
-        path: '', // Default route for dashboard
-        name: 'Overview',
-        component: () => import('../components/admin/OverviewPage.vue'),
+        path: "", // Default route for dashboard
+        name: "Overview",
+        component: () => import("../components/admin/OverviewPage.vue"),
       },
       {
-        path: 'profile',
-        name: 'Profile',
+        path: "profile",
+        name: "Profile",
         component: ProfilePage,
       },
       {
-        path: 'profile/edit',
-        name: 'EditProfile',
+        path: "profile/edit",
+        name: "EditProfile",
         component: EditProfilePage,
       },
       {
-        path: 'manage-users',
-        name: 'ManageUsers',
+        path: "manage-users",
+        name: "ManageUsers",
         component: ManageUsersPage,
-        children: [
-          {
-            path: 'profile/:id',
-            name: 'ProfileView',
-            component: ProfileView,
-          },
-        ],
       },
       {
-        path: 'settings',
-        name: 'Settings',
+        path: "manage-users/profile/:id",
+        name: "ProfileView",
+        component: ProfileView,
+      },
+      {
+        path: "settings",
+        name: "Settings",
         component: SettingsPage,
       },
     ],
   },
   {
-    path: '/protected',
-    name: 'Protected',
+    path: "/protected",
+    name: "Protected",
     component: ProtectedPage,
     meta: { requiresAuth: true }, // Route requires authentication
   },
@@ -70,10 +68,10 @@ const router = createRouter({
 
 // Navigation Guard: Check for authentication before accessing certain routes
 router.beforeEach((to, from, next) => {
-  if (to.matched.some(record => record.meta.requiresAuth)) {
-    const isAuthenticated = localStorage.getItem('authToken'); // Check for a stored auth token
+  if (to.matched.some((record) => record.meta.requiresAuth)) {
+    const isAuthenticated = localStorage.getItem("authToken"); // Check for a stored auth token
     if (!isAuthenticated) {
-      next('/'); // Redirect to the login page if not authenticated
+      next("/"); // Redirect to the login page if not authenticated
     } else {
       next(); // Allow access
     }
