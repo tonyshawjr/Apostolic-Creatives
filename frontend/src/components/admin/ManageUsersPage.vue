@@ -70,13 +70,16 @@
 
                   <div v-show="dropdownOpen === user.id" :data-dropdown-id="user.id"
                     class="absolute right-0 mt-2 w-32 bg-white rounded-lg shadow-lg z-50 border border-gray-200">
-                    <button @click="ViewUser(user)"
-                      class="flex items-center px-4 py-2 text-gray-600 hover:bg-gray-100 w-full">View</button>
+                    <button @click="viewUser(user.id)"
+                      class="flex items-center px-4 py-2 text-gray-600 hover:bg-gray-100 w-full">
+                      View
+                    </button>
                     <button @click="editUser(user)"
                       class="flex items-center px-4 py-2 text-gray-600 hover:bg-gray-100 w-full">Edit</button>
                     <button @click="deactivateUser(user)"
                       class="flex items-center px-4 py-2 text-gray-600 hover:bg-red-500 hover:text-white w-full">Deactivate</button>
                   </div>
+
 
                 </div>
               </td>
@@ -220,30 +223,8 @@ export default {
 
       this.filteredUsers = filtered.slice(startIndex, endIndex);
     },
-
-    paginate() {
-      this.currentPage = 1; // Reset to the first page when rows per page changes
-      this.filterAndPaginateUsers();
-    },
-
-    goToPreviousPage() {
-      if (this.currentPage > 1) {
-        this.currentPage--;
-        this.filterAndPaginateUsers();
-      }
-    },
-    goToNextPage() {
-      if (this.currentPage < this.totalPages) {
-        this.currentPage++;
-        this.filterAndPaginateUsers();
-      }
-    },
-
-    addNewUser() {
-      console.log("Redirect to Add New User page...");
-    },
-    ViewUser(user) {
-      console.log("View user:", user);
+    viewUser(userId) {
+      this.$router.push({ name: 'ProfileView', params: { id: userId } });
     },
     editUser(user) {
       console.log("Edit user:", user);
@@ -264,9 +245,24 @@ export default {
         this.dropdownOpen = null;
       }
     },
-
-
+    paginate() {
+      this.currentPage = 1;
+      this.filterAndPaginateUsers();
+    },
+    goToPreviousPage() {
+      if (this.currentPage > 1) {
+        this.currentPage--;
+        this.filterAndPaginateUsers();
+      }
+    },
+    goToNextPage() {
+      if (this.currentPage < this.totalPages) {
+        this.currentPage++;
+        this.filterAndPaginateUsers();
+      }
+    },
   },
+
   mounted() {
     this.filterAndPaginateUsers();
     document.addEventListener("click", this.closeDropdownOnOutsideClick);

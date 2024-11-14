@@ -8,6 +8,7 @@ const ProfilePage = () => import('../components/admin/ProfilePage.vue');
 const EditProfilePage = () => import('../components/admin/EditProfilePage.vue');
 const SettingsPage = () => import('../components/admin/SettingsPage.vue');
 const ManageUsersPage = () => import('../components/admin/ManageUsersPage.vue');
+const ProfileView = () => import('../components/admin/manage-users/ProfileView.vue');
 
 const routes = [
   {
@@ -38,6 +39,13 @@ const routes = [
         path: 'manage-users',
         name: 'ManageUsers',
         component: ManageUsersPage,
+        children: [
+          {
+            path: 'profile/:id',
+            name: 'ProfileView',
+            component: ProfileView,
+          },
+        ],
       },
       {
         path: 'settings',

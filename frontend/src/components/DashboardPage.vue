@@ -34,7 +34,7 @@
             </div>
 
             <!-- Child Menu Items -->
-            <ul v-if="item.children && expandedMenu === item.name" class="ml-6 mt-2 space-y-1">
+            <ul v-if="item.children && expandedMenu === item.name" class="mt-2 space-y-1">
               <li v-for="child in item.children" :key="child.name" class="px-4 py-2 cursor-pointer"
                 @click="setActiveMenu(child)">
                 <span class="text-gray-600 text-sm transition-all duration-300" :class="{
