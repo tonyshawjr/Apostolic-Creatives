@@ -118,7 +118,7 @@
               <line x1="21" y1="21" x2="16.65" y2="16.65" stroke-linecap="round" stroke-linejoin="round" />
             </svg>
 
-            <input type="text" placeholder="Search Talent, Partners, or Team Members"
+            <input type="text" placeholder="What can i help you find?"
               class="w-full px-12 py-3 rounded-full bg-gray-100 text-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-300" />
           </div>
         </div>
