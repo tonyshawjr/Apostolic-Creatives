@@ -38,7 +38,10 @@
           </thead>
           <tbody>
             <tr v-for="user in filteredUsers" :key="user.id" class="border-t even:bg-gray-50 relative">
-              <td class="px-4 py-2">{{ user.name }}</td>
+              <td class="px-4 py-2 font-medium text-gray-800 hover:text-gray-600 cursor-pointer transition"
+                @click="viewUser(user.id)">
+                {{ user.name }}
+              </td>
               <td class="px-4 py-2">{{ user.email }}</td>
               <td class="px-4 py-2 relative">
                 <div class="relative">
