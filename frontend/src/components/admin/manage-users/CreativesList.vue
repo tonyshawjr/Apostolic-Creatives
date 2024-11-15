@@ -12,8 +12,7 @@
           <circle cx="11" cy="11" r="8" stroke-linecap="round" stroke-linejoin="round" />
           <line x1="21" y1="21" x2="16.65" y2="16.65" stroke-linecap="round" stroke-linejoin="round" />
         </svg>
-        <input v-model="searchTerm" @input="searchUsers" type="text"
-          placeholder="Search Creatives"
+        <input v-model="searchTerm" @input="searchUsers" type="text" placeholder="Search Creatives"
           class="w-full px-12 py-3 rounded-full bg-gray-100 text-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-300" />
       </div>
 
@@ -40,23 +39,24 @@
           </thead>
           <tbody>
             <tr v-for="user in filteredUsers" :key="user.id" class="border-t even:bg-gray-50 relative">
-              <td class="px-4 py-2">{{ user.name }}</td>
+              <td class="px-4 py-2 font-medium text-gray-800 hover:text-gray-600 cursor-pointer transition"
+                @click="viewUser(user.id)">
+                {{ user.name }}
+              </td>
               <td class="px-4 py-2">{{ user.email }}</td>
               <td class="px-4 py-2">
-                <span
-                  :class="[
-                    user.verified ? 'bg-green-100 text-green-700' : 'bg-red-400 text-white',
-                    'px-3 py-1 rounded-full text-sm font-medium'
-                  ]">
+                <span :class="[
+                  user.verified ? 'bg-green-100 text-green-700' : 'bg-red-400 text-white',
+                  'px-3 py-1 rounded-full text-sm font-medium'
+                ]">
                   {{ user.verified ? 'Verified' : 'Not Verified' }}
                 </span>
               </td>
               <td class="px-4 py-2">
-                <span
-                  :class="[
-                    user.active ? 'bg-blue-100 text-gray-600' : 'bg-red-200 text-gray-600',
-                    'px-3 py-1 rounded-full text-sm font-medium'
-                  ]">
+                <span :class="[
+                  user.active ? 'bg-blue-100 text-gray-600' : 'bg-red-200 text-gray-600',
+                  'px-3 py-1 rounded-full text-sm font-medium'
+                ]">
                   {{ user.active ? 'Active' : 'Inactive' }}
                 </span>
               </td>
