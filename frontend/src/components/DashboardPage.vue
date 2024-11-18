@@ -37,7 +37,7 @@
                   <p class="text-sm text-gray-700 font-medium">Tony Shaw</p>
                 </div>
                 <button class="w-full text-left px-4 py-2 text-gray-600 hover:bg-gray-100">
-                  Profile & Account
+                  My Account
                 </button>
                 <button class="w-full text-left px-4 py-2 text-gray-600 hover:bg-gray-100">
                   Settings
@@ -281,11 +281,11 @@ export default {
       menuItems: [
         { name: "Dashboard", label: "Dashboard", children: null },
         {
-          name: "Profile",
-          label: "Profile",
+          name: "Account",
+          label: "My Account",
           children: [
-            { name: "ViewProfile", label: "View Profile" },
-            { name: "EditProfile", label: "Edit Profile" },
+            { name: "ViewAccount", label: "View Account" },
+            { name: "EditAccount", label: "Edit Account" },
           ],
         },
         {
@@ -295,6 +295,15 @@ export default {
             { name: "CreativesList", label: "Creatives" },
             { name: "PartnersList", label: "Partners" },
             { name: "TeamMembersList", label: "Team Members" },
+          ],
+        },
+        {
+          name: "ManageJobs",
+          label: "Jobs",
+          children: [
+            { name: "ActiveJobs", label: "Active Jobs" },
+            { name: "PendingJobs", label: "Pending Jobs" },
+            { name: "ExpiredJobs", label: "Expired Jobs" },
           ],
         },
         { name: "Settings", label: "Settings", children: null },
@@ -323,8 +332,11 @@ export default {
           CreativesList: "/dashboard/manage-users/creatives",
           PartnersList: "/dashboard/manage-users/partners",
           TeamMembersList: "/dashboard/manage-users/team-members",
-          ViewProfile: "/dashboard/profile",
-          EditProfile: "/dashboard/profile/edit",
+          ViewAccount: "/dashboard/account",
+          EditAccount: "/dashboard/account/edit",
+          ActiveJobs: "/dashboard/manage-jobs/active",
+          PendingJobs: "/dashboard/manage-jobs/pending",
+          ExpiredJobs: "/dashboard/manage-jobs/expired",
           Settings: "/dashboard/settings",
         };
         const route = routeMap[item.name] || `/dashboard/${item.name.toLowerCase()}`;
