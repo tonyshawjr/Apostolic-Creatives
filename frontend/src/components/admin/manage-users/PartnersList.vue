@@ -1,71 +1,125 @@
 <template>
   <div class="space-y-6">
-    <h1 class="text-2xl font-bold text-gray-800">Manage Partners</h1>
+    <!-- Header Section -->
+    <div class="bg-gradient-to-r from-purple-800 to-pink-600 rounded-lg shadow-lg overflow-hidden">
+      <div class="px-6 py-8 sm:px-8">
+        <div class="flex flex-col sm:flex-row justify-between items-center gap-6">
+          <!-- Search -->
+          <div class="w-full sm:w-auto sm:flex-1 sm:max-w-xl">
+            <div class="relative">
+              <svg xmlns="http://www.w3.org/2000/svg"
+                class="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-white/60" viewBox="0 0 24 24"
+                fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+              </svg>
+              <input v-model="searchTerm" @input="searchPartners" type="text"
+                placeholder="Search Partners by Church or Pastor"
+                class="w-full pl-12 pr-4 py-3 bg-white/10 text-white placeholder-white/60 rounded-lg focus:outline-none focus:ring-2 focus:ring-white/50" />
+            </div>
+          </div>
 
-    <!-- Search and Add Button -->
-    <div class="flex flex-wrap justify-between items-center space-y-4 md:space-y-0">
-      <!-- Search Input -->
-      <div class="w-full md:w-auto md:flex-1 md:max-w-md relative">
-        <svg xmlns="http://www.w3.org/2000/svg"
-          class="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" viewBox="0 0 24 24"
-          fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="11" cy="11" r="8" stroke-linecap="round" stroke-linejoin="round" />
-          <line x1="21" y1="21" x2="16.65" y2="16.65" stroke-linecap="round" stroke-linejoin="round" />
-        </svg>
-        <input v-model="searchTerm" @input="searchUsers" type="text"
-          placeholder="Search Team Members"
-          class="w-full px-12 py-3 rounded-full bg-gray-100 text-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-300" />
+          <!-- Add button -->
+          <button @click="addNewPartner"
+            class="w-full sm:w-auto px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-colors flex items-center justify-center gap-2 whitespace-nowrap">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+            Add New Partner
+          </button>
+        </div>
       </div>
-
-      <!-- Add Team Member Button -->
-      <button @click="addNewUser"
-        class="bg-purple-500 text-white px-4 py-2 rounded-lg hover:bg-purple-600 w-full md:w-auto">
-        + Add New Partner
-      </button>
     </div>
 
-    <!-- User Table -->
-    <div class="bg-white shadow-sm rounded-lg">
-      <!-- Responsive Table -->
-      <div class="hidden md:block">
-        <table class="w-full table-auto border-collapse">
+    <!-- Partners Table Card -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-100">
+      <!-- Desktop Table -->
+      <div class="hidden lg:block">
+        <table class="w-full">
           <thead>
-            <tr class="bg-gray-100 border-b">
-              <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">Name</th>
-              <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">Email</th>
-              <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">Actions</th>
+            <tr class="border-b border-gray-100">
+              <th class="px-6 py-4 text-left text-sm font-semibold text-gray-600">Church</th>
+              <th class="px-6 py-4 text-left text-sm font-semibold text-gray-600">Pastor</th>
+              <th class="px-6 py-4 text-left text-sm font-semibold text-gray-600">Location</th>
+              <th class="px-6 py-4 text-left text-sm font-semibold text-gray-600">Active Listings</th>
+              <th class="px-6 py-4 text-left text-sm font-semibold text-gray-600">Active Creatives</th>
+              <th class="px-6 py-4 text-left text-sm font-semibold text-gray-600">Status</th>
+              <th class="px-6 py-4 text-right text-sm font-semibold text-gray-600">Actions</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="user in filteredUsers" :key="user.id" class="border-t even:bg-gray-50 relative">
-              <td class="px-4 py-2 font-medium text-gray-800 hover:text-gray-600 cursor-pointer transition"
-                @click="viewUser(user.id)">
-                {{ user.name }}
+            <tr v-for="partner in paginatedPartners" :key="partner.id"
+              class="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+              <td class="px-6 py-4">
+                <div>
+                  <p @click="viewPartner(partner.id)"
+                    class="font-medium text-gray-900 hover:text-purple-600 cursor-pointer transition-colors">
+                    {{ partner.churchName }}
+                  </p>
+                  <p class="text-sm text-gray-500">{{ partner.email }}</p>
+                </div>
               </td>
-              <td class="px-4 py-2">{{ user.email }}</td>
-              <td class="px-4 py-2 relative">
-                <div class="relative">
-                  <button @click="toggleDropdown(user.id)" :data-button-id="user.id"
-                    class="text-gray-600 hover:text-gray-800">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
-                      stroke="currentColor" stroke-width="2">
-                      <circle cx="5" cy="12" r="1" />
-                      <circle cx="12" cy="12" r="1" />
-                      <circle cx="19" cy="12" r="1" />
+              <td class="px-6 py-4 text-gray-600">{{ partner.pastorName }}</td>
+              <td class="px-6 py-4 text-gray-600">{{ partner.location }}</td>
+              <td class="px-6 py-4 text-gray-600">{{ partner.activeListings }}</td>
+              <td class="px-6 py-4 text-gray-600">{{ partner.activeCreatives }}</td>
+              <td class="px-6 py-4">
+                <span :class="[
+                  partner.status === 'Active'
+                    ? 'bg-green-50 text-green-700 ring-green-600/20'
+                    : 'bg-gray-50 text-gray-600 ring-gray-500/10',
+                  'inline-flex items-center rounded-full px-2 py-1 text-sm font-medium ring-1 ring-inset'
+                ]">
+                  {{ partner.status }}
+                </span>
+              </td>
+              <td class="px-6 py-4">
+                <div class="flex items-center justify-end gap-2">
+                  <button @click="viewPartner(partner.id)"
+                    class="p-2 text-gray-600 hover:text-purple-600 transition-colors group relative"
+                    :aria-label="`View ${partner.churchName}'s profile`">
+                    <span
+                      class="absolute bottom-full mb-2 hidden group-hover:block bg-gray-900 text-white text-xs px-2 py-1 rounded whitespace-nowrap">
+                      View Profile
+                    </span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                      stroke="currentColor" aria-hidden="true">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                     </svg>
                   </button>
 
-                  <div v-show="dropdownOpen === user.id" :data-dropdown-id="user.id"
-                    class="absolute right-0 mt-2 w-32 bg-white rounded-lg shadow-lg z-50 border border-gray-200">
-                    <button @click="viewUser(user.id)"
-                      class="flex items-center px-4 py-2 text-gray-600 hover:bg-gray-100 w-full">
-                      View
-                    </button>
-                    <button @click="editUser(user)"
-                      class="flex items-center px-4 py-2 text-gray-600 hover:bg-gray-100 w-full">Edit</button>
-                    <button @click="deactivateUser(user)"
-                      class="flex items-center px-4 py-2 text-gray-600 hover:bg-red-500 hover:text-white w-full">Deactivate</button>
-                  </div>
+                  <button @click="editPartner(partner)"
+                    class="p-2 text-gray-600 hover:text-purple-600 transition-colors group relative"
+                    :aria-label="`Edit ${partner.churchName}'s profile`">
+                    <span
+                      class="absolute bottom-full mb-2 hidden group-hover:block bg-gray-900 text-white text-xs px-2 py-1 rounded whitespace-nowrap">
+                      Edit Profile
+                    </span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                      stroke="currentColor" aria-hidden="true">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                  </button>
+
+                  <button @click="togglePartnerStatus(partner)"
+                    class="p-2 text-gray-600 hover:text-red-600 transition-colors group relative"
+                    :aria-label="partner.status === 'Active' ? `Deactivate ${partner.churchName}'s account` : `Activate ${partner.churchName}'s account`">
+                    <span
+                      class="absolute bottom-full mb-2 hidden group-hover:block bg-gray-900 text-white text-xs px-2 py-1 rounded whitespace-nowrap">
+                      {{ partner.status === 'Active' ? 'Deactivate Account' : 'Activate Account' }}
+                    </span>
+                    <svg v-if="partner.status === 'Active'" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5"
+                      fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                    <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                      stroke="currentColor" aria-hidden="true">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                  </button>
                 </div>
               </td>
             </tr>
@@ -73,65 +127,71 @@
         </table>
       </div>
 
-      <!-- Responsive Cards for Mobile -->
-      <div class="block md:hidden space-y-4">
-        <div v-for="user in filteredUsers" :key="user.id" class="p-4 border rounded-lg bg-gray-50 shadow-sm relative">
-          <div class="flex justify-between items-center relative">
-            <h2 class="text-lg font-bold text-gray-800">{{ user.name }}</h2>
-            <!-- Ellipsis Button -->
-            <button @click.stop="toggleDropdown(user.id)" class="text-gray-600 hover:text-gray-800 relative"
-              :data-button-id="user.id">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
-                stroke="currentColor" stroke-width="2">
-                <circle cx="5" cy="12" r="1" />
-                <circle cx="12" cy="12" r="1" />
-                <circle cx="19" cy="12" r="1" />
-              </svg>
-            </button>
-
-            <!-- Dropdown -->
-            <div v-if="dropdownOpen === user.id"
-              class="absolute top-full right-0 mt-2 w-32 bg-white rounded-lg shadow-lg z-50 border border-gray-200"
-              :data-dropdown-id="user.id">
-              <button @click="viewUser(user)"
-                class="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 w-full text-left">
-                View
-              </button>
-              <button @click="editUser(user)"
-                class="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 w-full text-left">
-                Edit
-              </button>
-              <button @click="deactivateUser(user)"
-                class="block px-4 py-2 text-sm bg-red-500 text-white w-full text-left">
-                Deactivate
-              </button>
+      <!-- Mobile List -->
+      <div class="block lg:hidden divide-y divide-gray-100">
+        <div v-for="partner in paginatedPartners" :key="partner.id" class="p-4 hover:bg-gray-50">
+          <div class="text-center mb-3">
+            <p @click="viewPartner(partner.id)"
+              class="font-medium text-gray-900 hover:text-purple-600 cursor-pointer text-lg">
+              {{ partner.churchName }}
+            </p>
+            <p class="text-sm text-gray-600">{{ partner.pastorName }}</p>
+            <p class="text-sm text-gray-500">{{ partner.location }}</p>
+            <div class="mt-2 flex justify-center gap-4">
+              <p class="text-sm text-gray-500">
+                <span class="font-medium">{{ partner.activeListings }}</span> Listings
+              </p>
+              <p class="text-sm text-gray-500">
+                <span class="font-medium">{{ partner.activeCreatives }}</span> Creatives
+              </p>
             </div>
           </div>
-          <p class="text-sm text-gray-600 font-medium">{{ user.email }}</p>
+
+          <div class="flex justify-center mb-4">
+            <span :class="[
+              partner.status === 'Active'
+                ? 'bg-green-50 text-green-700 ring-green-600/20'
+                : 'bg-gray-50 text-gray-600 ring-gray-500/10',
+              'inline-flex items-center rounded-full px-3 py-1 text-sm font-medium ring-1 ring-inset'
+            ]">
+              {{ partner.status }}
+            </span>
+          </div>
+
+          <div class="grid grid-cols-3 gap-3 pt-3 border-t border-gray-100">
+            <button @click="viewPartner(partner.id)"
+              class="text-purple-600 font-medium hover:text-purple-800 active:text-purple-900 py-2">
+              View
+            </button>
+            <button @click="editPartner(partner)"
+              class="text-purple-600 font-medium hover:text-purple-800 active:text-purple-900 py-2">
+              Edit
+            </button>
+            <button @click="togglePartnerStatus(partner)"
+              class="text-red-600 font-medium hover:text-red-800 active:text-red-900 py-2">
+              {{ partner.status === 'Active' ? 'Deactivate' : 'Activate' }}
+            </button>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- Pagination and Rows per Page -->
-    <div class="flex flex-col items-center space-y-4 mt-4">
-      <div class="flex items-center justify-center space-x-4">
-        <button @click="goToPreviousPage" :disabled="currentPage === 1"
-          class="px-4 py-2 text-sm bg-gray-200 rounded-lg hover:bg-gray-300 disabled:opacity-50">
-          Previous
-        </button>
-        <span class="text-sm text-gray-600">Page {{ currentPage }} of {{ totalPages }}</span>
-        <button @click="goToNextPage" :disabled="currentPage === totalPages"
-          class="px-4 py-2 text-sm bg-gray-200 rounded-lg hover:bg-gray-300 disabled:opacity-50">
-          Next
-        </button>
-      </div>
-
-      <div class="flex items-center justify-center space-x-2">
-        <label for="rowsPerPage" class="text-sm text-gray-600">Rows per page:</label>
-        <select id="rowsPerPage" v-model="rowsPerPage" @change="paginate"
-          class="border rounded-lg px-2 py-1 text-sm text-gray-600">
-          <option v-for="option in [5, 10, 20]" :key="option" :value="option">{{ option }}</option>
-        </select>
+      <!-- Pagination -->
+      <div class="px-6 py-4 border-t border-gray-100">
+        <div class="flex items-center justify-between">
+          <p class="text-sm text-gray-600">
+            Showing {{ startIndex + 1 }} to {{ endIndex }} of {{ filteredPartners.length }} partners
+          </p>
+          <div class="flex gap-2">
+            <button @click="previousPage" :disabled="currentPage === 1"
+              class="px-4 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50">
+              Previous
+            </button>
+            <button @click="nextPage" :disabled="currentPage >= totalPages"
+              class="px-4 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50">
+              Next
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -139,72 +199,98 @@
 
 <script>
 export default {
-  name: "PartnerMembersList",
+  name: 'PartnersList',
+
   data() {
     return {
-      searchTerm: "",
-      dropdownOpen: null,
-      rowsPerPage: 5,
+      searchTerm: '',
       currentPage: 1,
-      users: [
-        { id: 1, name: "Evan Grizzle", email: "evan.grizzle@example.com" },
-        { id: 2, name: "John Doe", email: "john.doe@example.com" },
-        { id: 3, name: "Jane Smith", email: "jane.smith@example.com" },
-        { id: 4, name: "Michael Brown", email: "michael.brown@example.com" },
-        // Add more team members
-      ],
-      filteredUsers: [],
-    };
+      itemsPerPage: 20,
+      partners: [
+        {
+          id: 1,
+          churchName: "Grace Community Church",
+          pastorName: "Rev. David Johnson",
+          email: "pastor@gracechurch.org",
+          status: "Active",
+          location: "Austin, TX",
+          activeListings: 12,
+          activeCreatives: 8
+        },
+        {
+          id: 2,
+          churchName: "New Life Fellowship",
+          pastorName: "Rev. Sarah Williams",
+          email: "sarah@newlife.org",
+          status: "Pending",
+          location: "Dallas, TX",
+          activeListings: 5,
+          activeCreatives: 3
+        }
+      ]
+    }
   },
+
   computed: {
+    filteredPartners() {
+      if (!this.searchTerm) return this.partners
+
+      const searchLower = this.searchTerm.toLowerCase()
+      return this.partners.filter(partner =>
+        partner.churchName.toLowerCase().includes(searchLower) ||
+        partner.pastorName.toLowerCase().includes(searchLower)
+      )
+    },
+
     totalPages() {
-      return Math.ceil(this.users.length / this.rowsPerPage);
+      return Math.ceil(this.filteredPartners.length / this.itemsPerPage)
     },
+
+    startIndex() {
+      return (this.currentPage - 1) * this.itemsPerPage
+    },
+
+    endIndex() {
+      return Math.min(this.startIndex + this.itemsPerPage, this.filteredPartners.length)
+    },
+
+    paginatedPartners() {
+      return this.filteredPartners.slice(this.startIndex, this.endIndex)
+    }
   },
+
   methods: {
-    addNewUser() {
-      alert("Add new team member form should load.");
+    addNewPartner() {
+      this.$router.push('/dashboard/manage-partners/new')
     },
-    searchUsers() {
-      this.filteredUsers = this.users.filter((user) =>
-        user.name.toLowerCase().includes(this.searchTerm.toLowerCase())
-      );
+
+    viewPartner(partner) {
+      this.$router.push(`/dashboard/manage-users/partner/${partner.Id}`)
     },
-    viewUser(userId) {
-      this.$router.push({ name: "PartnerProfile", params: { id: userId } });
+
+    editPartner(partner) {
+      this.$router.push(`/dashboard/manage-users/partner/edit/${partner.Id}`)
     },
-    editUser(user) {
-      console.log("Edit user:", user);
+
+    togglePartnerStatus(partner) {
+      partner.status = partner.status === 'Active' ? 'Inactive' : 'Active'
     },
-    deactivateUser(user) {
-      if (confirm(`Are you sure you want to deactivate ${user.name}?`)) {
-        console.log(`Deactivated user: ${user.name}`);
-      }
+
+    searchPartners() {
+      this.currentPage = 1
     },
-    toggleDropdown(userId) {
-      this.dropdownOpen = this.dropdownOpen === userId ? null : userId;
-    },
-    paginate() {
-      this.filteredUsers = this.users.slice(
-        (this.currentPage - 1) * this.rowsPerPage,
-        this.currentPage * this.rowsPerPage
-      );
-    },
-    goToPreviousPage() {
+
+    previousPage() {
       if (this.currentPage > 1) {
-        this.currentPage--;
-        this.paginate();
+        this.currentPage--
       }
     },
-    goToNextPage() {
+
+    nextPage() {
       if (this.currentPage < this.totalPages) {
-        this.currentPage++;
-        this.paginate();
+        this.currentPage++
       }
-    },
-  },
-  mounted() {
-    this.paginate();
-  },
-};
+    }
+  }
+}
 </script>

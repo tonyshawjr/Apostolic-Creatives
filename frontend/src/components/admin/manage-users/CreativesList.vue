@@ -20,7 +20,7 @@
             v-model="searchTerm" 
             @input="searchUsers" 
             type="text" 
-            placeholder="Search creatives by name"
+            placeholder="Search Creatives by Name or Email"
             class="w-full pl-12 pr-4 py-3 bg-white/10 text-white placeholder-white/60 rounded-lg focus:outline-none focus:ring-2 focus:ring-white/50"
           />
         </div>
