@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen bg-gray-50 flex flex-col relative">
     <!-- Dark Slate Gray Header -->
-    <header class="bg-[#232023] text-white">
+    <header class="bg-[#1F2937] text-white">
       <div class="max-w-[1280px] mx-auto px-4 py-4 flex flex-col sm:px-6">
         <!-- Top Row - Logo and Icons -->
         <div class="flex items-center justify-between w-full">
@@ -134,7 +134,7 @@
         <div class="overflow-x-auto whitespace-nowrap">
           <ul class="flex items-center space-x-6">
             <li v-for="item in menuItems" :key="item.name"
-              class="relative text-white font-semibold cursor-pointer inline-block"
+              class="relative text-white cursor-pointer inline-block"
               :ref="el => { if (el) menuRefs[item.name] = el }">
               <div @click="toggleChildMenu(item, $event)">
                 {{ item.label }}
@@ -174,7 +174,7 @@
         <router-view />
       </div>
     </main>
-    <footer class="bg-[#232023] text-white mt-auto">
+    <footer class="bg-[#1F2937] text-white mt-auto">
       <div class="max-w-[1280px] mx-auto px-4 sm:px-6">
         <!-- Main Footer Content -->
         <div class="py-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
