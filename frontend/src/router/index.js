@@ -9,6 +9,7 @@ const SettingsPage = () => import("../components/admin/SettingsPage.vue");
 const ManageUsersPage = () => import("../components/admin/ManageUsersPage.vue");
 const ManageJobsPage = () => import("../components/admin/ManageJobsPage.vue");
 
+
 const routes = [
  {
    path: "/",
