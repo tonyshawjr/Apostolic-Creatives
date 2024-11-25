@@ -1,16 +1,5 @@
 <template>
   <div class="space-y-6">
-    <!-- Settings Section Header -->
-    <div class="bg-gradient-to-r from-purple-800 to-pink-600 rounded-lg shadow-lg overflow-hidden mb-6">
-      <div class="px-6 py-8">
-        <div class="flex items-center justify-between">
-          <div>
-            <h3 class="text-xl font-semibold text-white">Edit Account Settings</h3>
-            <p class="text-white/70 mt-1">Update your account information and preferences</p>
-          </div>
-        </div>
-      </div>
-    </div>
 
     <!-- Profile Information Card -->
     <div class="bg-white rounded-lg shadow-sm border border-gray-100">
